@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { FacebookModule } from './facebook/facebook.module';
 import { PrismaService } from './prisma/prisma.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulerService } from './scheduler/scheduler.service';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { HttpModule } from '@nestjs/axios';
+import { PageModule } from './page/page.module';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { HttpModule } from '@nestjs/axios';
     }),
     HttpModule,
     ScheduleModule.forRoot(),
-    FacebookModule,
+    PageModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, SchedulerService],

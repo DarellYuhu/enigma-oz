@@ -16,8 +16,10 @@ datasource db {
 
 model Page {
   id          String   @id @default(uuid())
-  pageId      String
+  pageId      String   @unique
+  name        String
   accessToken String
+  isActive    Boolean  @default(true)
   Metric      Metric[]
 }
 

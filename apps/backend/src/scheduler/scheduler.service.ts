@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
-import { FacebookGraphResponseDto } from './dto/facebook-graph-response.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { validateOrReject } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
 import { HttpService } from '@nestjs/axios';
-import { lastValueFrom } from 'rxjs';
-import { AxiosResponse } from 'axios';
+import { Page } from '.prisma/client';
+// import { lastValueFrom } from 'rxjs';
+import { AxiosError } from 'axios';
 
 @Injectable()
 export class SchedulerService {
@@ -17,9 +15,24 @@ export class SchedulerService {
     private prisma: PrismaService,
     private httpService: HttpService,
   ) {}
+  //
 
-  @Cron('*/5 * * * * *', { name: 'getFacebookData' })
-  async getFacebookData() {
+  @Cron('*/5 * * * * *', { name: 'getFacebookDataJob' })
+  async getFacebookDataJob() {
+    try {
+      const facebookPages = await this.prisma.page.findMany({
+        where: { isActive: true },
+      });
+
+      const groups = this.paginateData(facebookPages);
+
+      groups.map((batch) => this.getFacebookData(batch));
+    } finally {
+      this.schedulerRegistry.deleteCronJob('getFacebookDataJob');
+    }
+  }
+
+  private async getFacebookData(pages: Page[]) {
     try {
       const FACEBOOK_GRAPH_BASE_URL = this.configService.get<string>(
         'FACEBOOK_GRAPH_BASE_URL',
@@ -51,64 +64,83 @@ export class SchedulerService {
         'post_video_avg_time_watched',
         'post_video_views',
       ];
-      const pageId = '101667115094028';
-      const accessToken =
-        'EAAGhvlPnuKMBOzMozZCVIUZBdvJMPpFDGhjS23EL5aKeZCPAerOwr1JhhEfCnRN6tY7MoAt6CUmLgZCO1n3ZA5jItEB3ZCAyUQiSwYltaZAZCU0mLucOmH9hj88l6YZANFOtxT01iZCZCVPIRAnpmBc5WrZAZAZCPlOOVlQyweTxRybqd6Y7vSteLB5U40XjhX8f82B8MZD';
 
-      const url = new URL(`/${pageId}/insights`, FACEBOOK_GRAPH_BASE_URL);
-      url.searchParams.set('metric', metrics.join(','));
-      url.searchParams.set('access_token', accessToken);
-      url.searchParams.set('date_preset', 'last_month');
+      const batch = pages.map((page) => {
+        const searchParams = new URLSearchParams(`${page.pageId}/insights`);
+        searchParams.set('metric', metrics.join(','));
+        searchParams.set('access_token', page.accessToken);
+        searchParams.set('date_preset', 'last_month');
 
-      const { data } = await lastValueFrom<
-        AxiosResponse<FacebookGraphResponseDto>
-      >(this.httpService.get(url.toString()));
-
-      const testPayload = plainToInstance(FacebookGraphResponseDto, data);
-
-      await validateOrReject(testPayload, {
-        stopAtFirstError: true,
-        whitelist: true,
-        forbidUnknownValues: false,
-        forbidNonWhitelisted: true,
+        return {
+          method: 'GET',
+          relative_url: decodeURIComponent(searchParams.toString()),
+        };
       });
 
-      const metricPayload = data.data.flatMap((metric) =>
-        metric.values.map((value) => ({
-          metricId: metric.id,
-          end_time: value.end_time
-            ? new Date(value.end_time).toISOString()
-            : undefined,
-          ...value,
-        })),
-      );
+      console.log(batch);
 
-      await this.prisma.$transaction(async (db) => {
-        const page = await db.page.create({
-          data: { accessToken, pageId },
-        });
-        await db.metric.createMany({
-          data: data.data.map(({ values, ...metric }) => ({
-            ...metric,
-            pageId: page.id,
-          })),
-          skipDuplicates: true,
-        });
+      const url = new URL('/page', FACEBOOK_GRAPH_BASE_URL);
+      url.searchParams.set('batch', JSON.stringify(batch));
 
-        await db.values.createMany({
-          data: metricPayload.map((value) => ({
-            metricId: value.metricId,
-            value: value.value,
-          })),
-          skipDuplicates: true,
-        });
-      });
+      // const { data } = await lastValueFrom(
+      //   this.httpService.post(url.toString()),
+      // );
+
+      // console.log(data);
+
+      // const testPayload = plainToInstance(FacebookGraphResponseDto, data);
+
+      // await validateOrReject(testPayload, {
+      //   stopAtFirstError: true,
+      //   whitelist: true,
+      //   forbidUnknownValues: false,
+      //   forbidNonWhitelisted: true,
+      // });
+
+      // const metricPayload = data.data.flatMap((metric) =>
+      //   metric.values.map((value) => ({
+      //     metricId: metric.id,
+      //     end_time: value.end_time
+      //       ? new Date(value.end_time).toISOString()
+      //       : undefined,
+      //     ...value,
+      //   })),
+      // );
+
+      // await this.prisma.$transaction(async (db) => {
+      //   const page = await db.page.create({
+      //     data: { accessToken, pageId },
+      //   });
+      //   await db.metric.createMany({
+      //     data: data.data.map(({ values, ...metric }) => ({
+      //       ...metric,
+      //       pageId: page.id,
+      //     })),
+      //     skipDuplicates: true,
+      //   });
+
+      //   await db.values.createMany({
+      //     data: metricPayload.map((value) => ({
+      //       metricId: value.metricId,
+      //       value: value.value,
+      //     })),
+      //     skipDuplicates: true,
+      //   });
+      // });
 
       console.log('success');
     } catch (error) {
-      console.log(error[0].children[0]);
-    } finally {
-      this.schedulerRegistry.deleteCronJob('getFacebookData');
+      if (error instanceof AxiosError) {
+        console.log(error.response);
+      }
+      console.log('huhi');
     }
+  }
+
+  private paginateData(data: Page[]) {
+    const pageSize = 40;
+    return Array.from({ length: Math.ceil(data.length / pageSize) }, (_, i) =>
+      data.slice(i * pageSize, i * pageSize + pageSize),
+    );
   }
 }
