@@ -6,5 +6,5 @@ export class CreatePageDto implements Partial<Page> {
   accessToken: string;
 
   @IsString()
-  pageId: string;
+  id: string;
 }

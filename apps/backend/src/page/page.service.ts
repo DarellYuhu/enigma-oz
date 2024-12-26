@@ -19,7 +19,7 @@ export class PageService {
     const FACEBOOK_GRAPH_BASE_URL = this.configService.get<string>(
       'FACEBOOK_GRAPH_BASE_URL',
     );
-    const url = new URL(`/${createPageDto.pageId}`, FACEBOOK_GRAPH_BASE_URL);
+    const url = new URL(`/${createPageDto.id}`, FACEBOOK_GRAPH_BASE_URL);
     url.searchParams.set('access_token', createPageDto.accessToken);
     const { data } = await lastValueFrom<AxiosResponse<{ name: string }>>(
       this.httpService.get(url.toString()),

@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class ValueDto {
+export class ValueDto {
   @IsNumber()
   value: number;
 

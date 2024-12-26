@@ -15,8 +15,7 @@ datasource db {
 }
 
 model Page {
-  id          String   @id @default(uuid())
-  pageId      String   @unique
+  id          String   @id
   name        String
   accessToken String
   isActive    Boolean  @default(true)

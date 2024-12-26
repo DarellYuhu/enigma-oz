@@ -3,9 +3,15 @@ import { ConfigService } from '@nestjs/config';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HttpService } from '@nestjs/axios';
-import { Page } from '.prisma/client';
-// import { lastValueFrom } from 'rxjs';
-import { AxiosError } from 'axios';
+import { Page, Prisma } from '.prisma/client';
+import { AxiosError, AxiosResponse } from 'axios';
+import { lastValueFrom } from 'rxjs';
+import {
+  FacebookGraphResponseDto,
+  ValueDto,
+} from './dto/facebook-graph-response.dto';
+import { plainToInstance } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 
 @Injectable()
 export class SchedulerService {
@@ -15,7 +21,6 @@ export class SchedulerService {
     private prisma: PrismaService,
     private httpService: HttpService,
   ) {}
-  //
 
   @Cron('*/5 * * * * *', { name: 'getFacebookDataJob' })
   async getFacebookDataJob() {
@@ -65,75 +70,64 @@ export class SchedulerService {
         'post_video_views',
       ];
 
-      const batch = pages.map((page) => {
-        const searchParams = new URLSearchParams(`${page.pageId}/insights`);
-        searchParams.set('metric', metrics.join(','));
-        searchParams.set('access_token', page.accessToken);
-        searchParams.set('date_preset', 'last_month');
+      const data = await Promise.all(
+        pages.map(async (page) => {
+          const url = new URL(`/${page.id}/insights`, FACEBOOK_GRAPH_BASE_URL);
+          url.searchParams.set('metric', metrics.join(','));
+          url.searchParams.set('access_token', page.accessToken);
+          url.searchParams.set('date_preset', 'last_7d');
+          const { data } = await lastValueFrom<
+            AxiosResponse<FacebookGraphResponseDto>
+          >(this.httpService.get(url.toString()));
 
-        return {
-          method: 'GET',
-          relative_url: decodeURIComponent(searchParams.toString()),
-        };
+          const testPayload = plainToInstance(FacebookGraphResponseDto, data);
+
+          await validateOrReject(testPayload, {
+            stopAtFirstError: true,
+            whitelist: true,
+            forbidUnknownValues: false,
+            forbidNonWhitelisted: true,
+          });
+
+          return { ...data, pageId: page.id };
+        }),
+      );
+
+      const metricPayload: (Prisma.MetricCreateManyInput & {
+        values: ValueDto[];
+      })[] = data.flatMap((item) =>
+        item.data.map((value) => ({
+          ...value,
+          pageId: item.pageId,
+        })),
+      );
+
+      const valuePayload: Prisma.ValuesCreateManyInput[] =
+        metricPayload.flatMap((item) =>
+          item.values.map<Prisma.ValuesCreateManyInput>((value) => ({
+            end_time: value.end_time ? new Date(value.end_time) : null,
+            value: value.value,
+            metricId: item.id,
+          })),
+        );
+
+      await this.prisma.$transaction(async (db) => {
+        await db.metric.createMany({
+          data: metricPayload.map(({ values, ...item }) => item),
+          skipDuplicates: true,
+        });
+
+        await db.values.createMany({
+          data: valuePayload,
+          skipDuplicates: true,
+        });
       });
-
-      console.log(batch);
-
-      const url = new URL('/page', FACEBOOK_GRAPH_BASE_URL);
-      url.searchParams.set('batch', JSON.stringify(batch));
-
-      // const { data } = await lastValueFrom(
-      //   this.httpService.post(url.toString()),
-      // );
-
-      // console.log(data);
-
-      // const testPayload = plainToInstance(FacebookGraphResponseDto, data);
-
-      // await validateOrReject(testPayload, {
-      //   stopAtFirstError: true,
-      //   whitelist: true,
-      //   forbidUnknownValues: false,
-      //   forbidNonWhitelisted: true,
-      // });
-
-      // const metricPayload = data.data.flatMap((metric) =>
-      //   metric.values.map((value) => ({
-      //     metricId: metric.id,
-      //     end_time: value.end_time
-      //       ? new Date(value.end_time).toISOString()
-      //       : undefined,
-      //     ...value,
-      //   })),
-      // );
-
-      // await this.prisma.$transaction(async (db) => {
-      //   const page = await db.page.create({
-      //     data: { accessToken, pageId },
-      //   });
-      //   await db.metric.createMany({
-      //     data: data.data.map(({ values, ...metric }) => ({
-      //       ...metric,
-      //       pageId: page.id,
-      //     })),
-      //     skipDuplicates: true,
-      //   });
-
-      //   await db.values.createMany({
-      //     data: metricPayload.map((value) => ({
-      //       metricId: value.metricId,
-      //       value: value.value,
-      //     })),
-      //     skipDuplicates: true,
-      //   });
-      // });
-
       console.log('success');
     } catch (error) {
       if (error instanceof AxiosError) {
         console.log(error.response);
       }
-      console.log('huhi');
+      console.log(error);
     }
   }
 
