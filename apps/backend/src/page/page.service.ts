@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePageDto } from './dto/create-page.dto';
 // import { UpdatePageDto } from './dto/update-page.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -34,8 +34,18 @@ export class PageService {
     return `This action returns all page`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} page`;
+  async findOne(id: string) {
+    const page = await this.prismaService.page.findUnique({
+      where: { id },
+      include: {
+        Metric: {
+          include: { Values: { select: { end_time: true, value: true } } },
+        },
+      },
+      omit: { accessToken: true },
+    });
+    if (!page) throw new NotFoundException('Page not found');
+    return page;
   }
 
   // update(id: number, _updatePageDto: UpdatePageDto) {
