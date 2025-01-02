@@ -1,10 +1,15 @@
-import { Page } from '.prisma/client';
 import { IsString } from 'class-validator';
 
-export class CreatePageDto implements Partial<Page> {
+export class CreatePageDto {
   @IsString()
-  accessToken: string;
+  appScopedUserId: string;
 
   @IsString()
-  id: string;
+  shortLivedToken: string;
+
+  @IsString()
+  clientId: string;
+
+  @IsString()
+  clientSecret: string;
 }

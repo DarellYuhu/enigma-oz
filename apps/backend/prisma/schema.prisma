@@ -26,11 +26,16 @@ model User {
 }
 
 model Page {
-  id          String   @id
-  name        String
-  accessToken String
-  isActive    Boolean  @default(true)
-  Metric      Metric[]
+  id                 String   @id
+  name               String
+  clientId           String
+  clientSecret       String
+  appScopedUserId    String
+  shortLivedToken    String
+  pageLongLivedToken String
+  userLongLivedToken String
+  isActive           Boolean  @default(true)
+  Metric             Metric[]
 }
 
 model Metric {

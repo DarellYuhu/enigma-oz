@@ -78,7 +78,7 @@ export class SchedulerService {
             'metric',
             Array.from([...metrics, ...demographicMetrics]).join(','),
           );
-          url.searchParams.set('access_token', page.accessToken);
+          url.searchParams.set('access_token', page.pageLongLivedToken);
           url.searchParams.set('date_preset', 'last_90d');
           url.searchParams.set('period', 'day');
           const { data } = await lastValueFrom<

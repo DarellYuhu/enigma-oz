@@ -24,9 +24,10 @@ export class PageController {
     try {
       return await this.pageService.create(createPageDto);
     } catch (error) {
-      if (error instanceof AxiosError)
+      if (error instanceof AxiosError) {
+        console.log(error.response?.data);
         throw new BadRequestException('Invalid Page ID or Access Token');
-      else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002')
           throw new ConflictException('Page Already Exists');
       } else throw error;

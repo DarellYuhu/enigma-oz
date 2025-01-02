@@ -2,30 +2,34 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePageDto } from './dto/create-page.dto';
 // import { UpdatePageDto } from './dto/update-page.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { lastValueFrom } from 'rxjs';
-import { AxiosResponse } from 'axios';
+import { FacebookService } from 'src/facebook/facebook.service';
 
 @Injectable()
 export class PageService {
   constructor(
     private prismaService: PrismaService,
-    private httpService: HttpService,
-    private configService: ConfigService,
+    private facebookService: FacebookService,
   ) {}
 
   async create(createPageDto: CreatePageDto) {
-    const FACEBOOK_GRAPH_BASE_URL = this.configService.get<string>(
-      'FACEBOOK_GRAPH_BASE_URL',
+    const { access_token: longLivedUserToken } =
+      await this.facebookService.generateUserLongLivedToken({
+        ...createPageDto,
+      });
+    const { data } = await this.facebookService.generatePageLongLivedToken(
+      createPageDto.appScopedUserId,
+      longLivedUserToken,
     );
-    const url = new URL(`/${createPageDto.id}`, FACEBOOK_GRAPH_BASE_URL);
-    url.searchParams.set('access_token', createPageDto.accessToken);
-    const { data } = await lastValueFrom<AxiosResponse<{ name: string }>>(
-      this.httpService.get(url.toString()),
-    );
-    const page = await this.prismaService.page.create({
-      data: { name: data.name, ...createPageDto },
+
+    const page = await this.prismaService.page.createMany({
+      data: data.map((item) => ({
+        ...createPageDto,
+        id: item.id,
+        name: item.name,
+        pageLongLivedToken: item.access_token,
+        userLongLivedToken: longLivedUserToken,
+      })),
+      skipDuplicates: true,
     });
     return page;
   }
@@ -37,7 +41,10 @@ export class PageService {
   async findOne(id: string) {
     const page = await this.prismaService.page.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        isActive: true,
         Metric: {
           include: {
             Values: { select: { end_time: true, value: true } },
@@ -45,7 +52,6 @@ export class PageService {
           },
         },
       },
-      omit: { accessToken: true },
     });
     if (!page) throw new NotFoundException('Page not found');
     const data = {

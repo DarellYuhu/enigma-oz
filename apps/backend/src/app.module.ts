@@ -9,6 +9,8 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { HttpModule } from '@nestjs/axios';
 import { PageModule } from './page/page.module';
 import { AuthModule } from './auth/auth.module';
+import { FacebookService } from './facebook/facebook.service';
+import { FacebookModule } from './facebook/facebook.module';
 
 @Module({
   imports: [
@@ -24,8 +26,9 @@ import { AuthModule } from './auth/auth.module';
     ScheduleModule.forRoot(),
     PageModule,
     AuthModule,
+    FacebookModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, SchedulerService],
+  providers: [AppService, PrismaService, SchedulerService, FacebookService],
 })
 export class AppModule {}
