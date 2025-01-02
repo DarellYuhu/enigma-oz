@@ -8,6 +8,7 @@ import { SchedulerService } from './scheduler/scheduler.service';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { HttpModule } from '@nestjs/axios';
 import { PageModule } from './page/page.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,10 +18,12 @@ import { PageModule } from './page/page.module';
     ConfigModule.forRoot({
       envFilePath: ['.env.development'],
       expandVariables: true,
+      isGlobal: true,
     }),
     HttpModule,
     ScheduleModule.forRoot(),
     PageModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, SchedulerService],
