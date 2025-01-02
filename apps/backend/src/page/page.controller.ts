@@ -44,7 +44,7 @@ export class PageController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePageDto: UpdatePageDto) {
+  update(@Param('id') _id: string, @Body() _updatePageDto: UpdatePageDto) {
     // return this.pageService.update(+id, updatePageDto);
   }
 

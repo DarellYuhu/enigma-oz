@@ -24,14 +24,27 @@ model Page {
 }
 
 model Metric {
-  id          String   @id
-  name        String
-  period      String
-  title       String?
-  description String
-  pageId      String
-  Page        Page     @relation(references: [id], fields: [pageId])
-  Values      Values[]
+  id                String              @id
+  name              String
+  period            String
+  title             String?
+  description       String
+  pageId            String
+  Page              Page                @relation(references: [id], fields: [pageId])
+  Values            Values[]
+  DemographicValues DemographicValues[]
+
+  @@unique([name, pageId])
+}
+
+model DemographicValues {
+  id       Int       @id @default(autoincrement())
+  values   Json
+  end_time DateTime?
+  metricId String
+  Metric   Metric    @relation(fields: [metricId], references: [id])
+
+  @@unique([metricId, end_time])
 }
 
 model Values {

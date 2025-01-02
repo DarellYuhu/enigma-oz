@@ -1,4 +1,4 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePageDto } from './dto/create-page.dto';
 // import { UpdatePageDto } from './dto/update-page.dto';
 import { PrismaService } from 'src/prisma/prisma.service';

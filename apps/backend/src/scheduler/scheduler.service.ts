@@ -7,11 +7,9 @@ import { Page, Prisma } from '.prisma/client';
 import { AxiosError, AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import {
-  FacebookGraphResponseDto,
-  ValueDto,
-} from './dto/facebook-graph-response.dto';
-import { plainToInstance } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
+  facebookGraphResponseSchema,
+  FacebookGraphResponseSchema,
+} from './schema/facebook-graph-response.schema';
 
 @Injectable()
 export class SchedulerService {
@@ -54,66 +52,83 @@ export class SchedulerService {
         'page_video_views',
         'page_video_complete_views_30s',
         'page_views_total',
+        'post_reactions_like_total',
+        'post_reactions_love_total',
+        'post_reactions_wow_total',
+        'post_reactions_haha_total',
+        'post_reactions_sorry_total',
+        'post_reactions_anger_total',
+
         // 'post_clicks',
         // 'post_impressions',
         // 'post_impressions_fan',
-        // 'post_reactions_like_total',
-        // 'post_reactions_love_total',
-        // 'post_reactions_wow_total',
-        // 'post_reactions_haha_total',
-        // 'post_reactions_sorry_total',
-        // 'post_reactions_anger_total',
-        // 'page_fans_locale',
-        // 'page_fans_city',
-        // 'page_fans_country',
         // 'post_video_views',
         // 'post_video_avg_time_watched',
+      ];
+      const demographicMetrics = [
+        'page_fans_locale',
+        'page_fans_city',
+        'page_fans_country',
       ];
 
       const data = await Promise.all(
         pages.map(async (page) => {
           const url = new URL(`/${page.id}/insights`, FACEBOOK_GRAPH_BASE_URL);
-          url.searchParams.set('metric', metrics.join(','));
+          url.searchParams.set(
+            'metric',
+            Array.from([...metrics, ...demographicMetrics]).join(','),
+          );
           url.searchParams.set('access_token', page.accessToken);
-          url.searchParams.set('date_preset', 'last_7d');
+          url.searchParams.set('date_preset', 'last_90d');
+          url.searchParams.set('period', 'day');
           const { data } = await lastValueFrom<
-            AxiosResponse<FacebookGraphResponseDto>
+            AxiosResponse<FacebookGraphResponseSchema>
           >(this.httpService.get(url.toString()));
 
-          const testPayload = plainToInstance(FacebookGraphResponseDto, data);
+          const validData = facebookGraphResponseSchema.parse(data);
 
-          await validateOrReject(testPayload, {
-            stopAtFirstError: true,
-            whitelist: true,
-            forbidUnknownValues: false,
-            forbidNonWhitelisted: true,
-          });
-
-          return { ...data, pageId: page.id };
+          return { ...validData, pageId: page.id };
         }),
       );
 
-      const metricPayload: (Prisma.MetricCreateManyInput & {
-        values: ValueDto[];
-      })[] = data.flatMap((item) =>
+      const metricPayload = data.flatMap((item) =>
         item.data.map((value) => ({
           ...value,
           pageId: item.pageId,
         })),
       );
 
-      const valuePayload: Prisma.ValuesCreateManyInput[] =
-        metricPayload.flatMap((item) =>
+      const demographicValuePayload: Prisma.DemographicValuesCreateManyInput[] =
+        metricPayload
+          .filter((item) => demographicMetrics.includes(item.name))
+          .flatMap((item) =>
+            item.values.map<Prisma.DemographicValuesCreateManyInput>(
+              (value) => ({
+                end_time: value.end_time ? new Date(value.end_time) : null,
+                values: value.value,
+                metricId: item.id,
+              }),
+            ),
+          );
+
+      const valuePayload: Prisma.ValuesCreateManyInput[] = metricPayload
+        .filter((item) => !demographicMetrics.includes(item.name))
+        .flatMap((item) =>
           item.values.map<Prisma.ValuesCreateManyInput>((value) => ({
             end_time: value.end_time ? new Date(value.end_time) : null,
-            value: value.value,
+            value: value.value as number,
             metricId: item.id,
           })),
         );
 
       await this.prisma.$transaction(async (db) => {
         await db.metric.createMany({
-          data: metricPayload.map(({ values, ...item }) => item),
+          data: metricPayload.map(({ values: _values, ...item }) => item),
+          skipDuplicates: true,
+        });
+
+        await db.demographicValues.createMany({
+          data: demographicValuePayload,
           skipDuplicates: true,
         });
 
