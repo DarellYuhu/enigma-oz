@@ -105,7 +105,7 @@ export class SchedulerService {
             item.values.map<Prisma.DemographicValuesCreateManyInput>(
               (value) => ({
                 end_time: value.end_time ? new Date(value.end_time) : null,
-                values: value.value,
+                value: value.value,
                 metricId: item.id,
               }),
             ),
@@ -123,7 +123,12 @@ export class SchedulerService {
 
       await this.prisma.$transaction(async (db) => {
         await db.metric.createMany({
-          data: metricPayload.map(({ values: _values, ...item }) => item),
+          data: metricPayload.map(({ values: _values, ...item }) => ({
+            ...item,
+            type: demographicMetrics.includes(item.name)
+              ? 'DEMOGRAPHIC'
+              : 'STATISTIC',
+          })),
           skipDuplicates: true,
         });
 

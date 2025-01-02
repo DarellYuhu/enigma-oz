@@ -38,6 +38,7 @@ model Metric {
   name              String
   period            String
   title             String?
+  type              MetricType
   description       String
   pageId            String
   Page              Page                @relation(references: [id], fields: [pageId])
@@ -49,7 +50,7 @@ model Metric {
 
 model DemographicValues {
   id       Int       @id @default(autoincrement())
-  values   Json
+  value    Json
   end_time DateTime?
   metricId String
   Metric   Metric    @relation(fields: [metricId], references: [id])
@@ -69,4 +70,9 @@ model Values {
 
 enum Role {
   ADMIN
+}
+
+enum MetricType {
+  STATISTIC
+  DEMOGRAPHIC
 }

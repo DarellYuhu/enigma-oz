@@ -39,13 +39,31 @@ export class PageService {
       where: { id },
       include: {
         Metric: {
-          include: { Values: { select: { end_time: true, value: true } } },
+          include: {
+            Values: { select: { end_time: true, value: true } },
+            DemographicValues: { select: { end_time: true, value: true } },
+          },
         },
       },
       omit: { accessToken: true },
     });
     if (!page) throw new NotFoundException('Page not found');
-    return page;
+    const data = {
+      ...page,
+      Metric: Object.fromEntries(
+        page.Metric.map(({ DemographicValues, Values, ...metric }) => [
+          metric.name,
+          {
+            ...metric,
+            value: Array.from(
+              metric.type === 'DEMOGRAPHIC' ? DemographicValues : Values,
+            ),
+          },
+        ]),
+      ),
+    };
+
+    return data;
   }
 
   // update(id: number, _updatePageDto: UpdatePageDto) {
