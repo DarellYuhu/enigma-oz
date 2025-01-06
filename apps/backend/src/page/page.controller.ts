@@ -14,11 +14,17 @@ import { CreatePageDto } from './dto/create-page.dto';
 import { UpdatePageDto } from './dto/update-page.dto';
 import { AxiosError } from 'axios';
 import { Prisma } from '.prisma/client';
+import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  CreatePageResponseDto,
+  GetPageByIdResponseDto,
+} from './dto/page-response.dto';
 
 @Controller('page')
 export class PageController {
   constructor(private readonly pageService: PageService) {}
 
+  @ApiCreatedResponse({ type: CreatePageResponseDto })
   @Post()
   async create(@Body() createPageDto: CreatePageDto) {
     try {
@@ -34,23 +40,24 @@ export class PageController {
     }
   }
 
-  @Get()
-  findAll() {
-    return this.pageService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.pageService.findAll();
+  // }
 
+  @ApiOkResponse({ type: GetPageByIdResponseDto })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.pageService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') _id: string, @Body() _updatePageDto: UpdatePageDto) {
-    // return this.pageService.update(+id, updatePageDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') _id: string, @Body() _updatePageDto: UpdatePageDto) {
+  //   // return this.pageService.update(+id, updatePageDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pageService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.pageService.remove(+id);
+  // }
 }
