@@ -1,0 +1,24 @@
+services:
+  app:
+    depends_on:
+      - staging-db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: enigma-backend:staging
+    env_file:
+      - .env.staging
+    ports:
+      - '3001:3001'
+
+  staging-db:
+    image: postgres:latest
+    env_file:
+      - .env.staging
+    ports:
+      - 5432:5432
+    volumes:
+      - staging-data:/var/lib/postgresql/data
+
+volumes:
+  staging-data:
