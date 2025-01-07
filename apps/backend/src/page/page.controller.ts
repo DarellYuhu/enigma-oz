@@ -3,23 +3,24 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   BadRequestException,
   ConflictException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PageService } from './page.service';
 import { CreatePageDto } from './dto/create-page.dto';
-import { UpdatePageDto } from './dto/update-page.dto';
 import { AxiosError } from 'axios';
 import { Prisma } from '.prisma/client';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import {
   CreatePageResponseDto,
+  GetAllPageResponseDto,
   GetPageByIdResponseDto,
 } from './dto/page-response.dto';
+import { ResponseInterceptor } from 'src/response/response.interceptor';
 
+@UseInterceptors(ResponseInterceptor)
 @Controller('page')
 export class PageController {
   constructor(private readonly pageService: PageService) {}
@@ -40,10 +41,11 @@ export class PageController {
     }
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.pageService.findAll();
-  // }
+  @ApiOkResponse({ type: GetAllPageResponseDto })
+  @Get()
+  findAll() {
+    return this.pageService.findAll();
+  }
 
   @ApiOkResponse({ type: GetPageByIdResponseDto })
   @Get(':id')

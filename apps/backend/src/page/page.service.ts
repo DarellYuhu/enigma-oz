@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePageDto } from './dto/create-page.dto';
-// import { UpdatePageDto } from './dto/update-page.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FacebookService } from 'src/facebook/facebook.service';
 
@@ -35,7 +34,9 @@ export class PageService {
   }
 
   findAll() {
-    return `This action returns all page`;
+    return this.prismaService.page.findMany({
+      select: { id: true, name: true, isActive: true },
+    });
   }
 
   async findOne(id: string) {

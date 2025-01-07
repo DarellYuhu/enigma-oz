@@ -67,3 +67,22 @@ export class GetPageByIdResponseDto {
   @ApiProperty({ type: [Metric] })
   metric: Metric[];
 }
+
+class Page {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  isActive: boolean;
+}
+
+export class GetAllPageResponseDto {
+  @ApiProperty({ type: [Page] })
+  data: Page[];
+
+  @ApiProperty()
+  statusCode: number;
+}
