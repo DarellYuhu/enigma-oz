@@ -8,7 +8,7 @@ import { Button, Datatable } from "ui/components/";
 export default function PageTable() {
   const { data } = usePages();
 
-  return <Datatable columns={column} data={data?.data.pages || []} />;
+  return <Datatable columns={column} data={data?.pages || []} />;
 }
 
 const column: ColumnDef<PageData["data"]["pages"]["0"]>[] = [

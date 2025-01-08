@@ -17,8 +17,12 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
+    "recharts": "^2.15.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
+  },
+  "overrides": {
+    "react-is": "^19.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

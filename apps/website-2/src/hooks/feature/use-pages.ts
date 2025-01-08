@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 export const usePages = () => {
   return useQuery({
     queryKey: ["pages"],
-    queryFn: async (): Promise<PageData> => {
-      const { data } = await FacebookClient.get("/page");
-      return data;
+    queryFn: async (): Promise<PageData["data"]> => {
+      const { data }: { data: PageData } = await FacebookClient.get("/page");
+      return data.data;
     },
   });
 };
@@ -19,6 +19,7 @@ export type PageData = {
       isActive: boolean;
     }[];
     metrics: Record<string, number>;
+    timeSeries: Record<string, { end_time: string; value: number }[]>;
   };
   statusCode: number;
 };

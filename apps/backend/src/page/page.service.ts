@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePageDto } from './dto/create-page.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FacebookService } from 'src/facebook/facebook.service';
+import { format } from 'date-fns';
 
 @Injectable()
 export class PageService {
@@ -83,7 +84,57 @@ export class PageService {
       select: { id: true, name: true, isActive: true },
     });
 
-    return { pages, metrics: Object.fromEntries([...metrics1, ...metrics2]) };
+    const timeSeries = await this.prismaService.metric
+      .findMany({
+        include: {
+          Values: {
+            orderBy: {
+              end_time: 'asc',
+            },
+          },
+        },
+        where: {
+          name: {
+            in: [
+              'page_daily_follows',
+              'page_fan_adds',
+              'page_views_total',
+              'page_post_engagements',
+              'page_impressions',
+              'page_video_views',
+              'page_video_complete_views_30s',
+            ],
+          },
+        },
+      })
+      .then((data) => {
+        const grouping = Object.groupBy(data, (item) => item.name);
+        const sum = Object.entries(grouping).map(([key, value]) => {
+          return [
+            key,
+            Object.entries(
+              value
+                ?.flatMap((item) => item.Values)
+                .reduce(
+                  (acc, item) => {
+                    const end_time =
+                      format(item.end_time!, 'yyyy-MM-dd') ?? 'Null';
+                    acc[end_time] = (acc[end_time] || 0) + item.value;
+                    return acc;
+                  },
+                  {} as Record<string, number>,
+                ) ?? {},
+            ).map(([key, value]) => ({ end_time: key, value })),
+          ];
+        });
+        return Object.fromEntries(sum);
+      });
+
+    return {
+      pages,
+      metrics: Object.fromEntries([...metrics1, ...metrics2]),
+      timeSeries,
+    };
   }
 
   async findOne(id: string) {

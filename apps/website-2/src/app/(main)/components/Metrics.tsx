@@ -20,7 +20,7 @@ export default function Metrics() {
             data={{
               icon: ChartNoAxesCombined,
               name: "Total Impressions",
-              value: data.data.metrics.page_impressions,
+              value: data.metrics.page_impressions,
               description: "",
             }}
           />
@@ -28,7 +28,7 @@ export default function Metrics() {
             data={{
               icon: MousePointerClick,
               name: "Total Engagements",
-              value: data.data.metrics.page_post_engagements,
+              value: data.metrics.page_post_engagements,
               description: "",
             }}
           />
@@ -36,7 +36,7 @@ export default function Metrics() {
             data={{
               icon: SquarePlay,
               name: "Total Page Video Views",
-              value: data.data.metrics.page_video_views,
+              value: data.metrics.page_video_views,
               description: "",
             }}
           />
@@ -44,7 +44,7 @@ export default function Metrics() {
             data={{
               icon: Heart,
               name: "Total Likes",
-              value: data.data.metrics.page_fans,
+              value: data.metrics.page_fans,
               description: "",
             }}
           />
@@ -52,7 +52,7 @@ export default function Metrics() {
             data={{
               icon: Star,
               name: "Total Followers",
-              value: data.data.metrics.page_follows,
+              value: data.metrics.page_follows,
               description: "",
             }}
           />

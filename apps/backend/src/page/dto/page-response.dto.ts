@@ -79,12 +79,35 @@ class Page {
   isActive: boolean;
 }
 
+class TimeSeries {
+  @ApiProperty()
+  end_time: string;
+
+  @ApiProperty()
+  value: number;
+}
+
 class Data {
   @ApiProperty({ type: [Page] })
   pages: Page[];
 
   @ApiProperty({ additionalProperties: { type: 'number' } })
   metrics: Record<string, number>;
+
+  @ApiProperty({
+    type: Object,
+    additionalProperties: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          end_time: { type: 'string' },
+          value: { type: 'number' },
+        },
+      },
+    },
+  })
+  timeSeries: Record<string, TimeSeries[]>;
 }
 
 export class GetAllPageResponseDto {
