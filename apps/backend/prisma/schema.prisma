@@ -44,6 +44,7 @@ model Metric {
   period            String
   title             String?
   type              MetricType
+  valueType         ValueType
   description       String
   pageId            String
   Page              Page                @relation(references: [id], fields: [pageId])
@@ -80,4 +81,9 @@ enum Role {
 enum MetricType {
   STATISTIC
   DEMOGRAPHIC
+}
+
+enum ValueType {
+  LIFETIME
+  DAILY
 }

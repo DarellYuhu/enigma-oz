@@ -20,8 +20,8 @@ export class SchedulerService {
     private httpService: HttpService,
   ) {}
 
-  // @Cron('*/5 * * * * *', { name: 'getFacebookDataJob' })
-  @Cron('0 */3 * * *', { name: 'getFacebookDataJob' })
+  @Cron('*/5 * * * * *', { name: 'getFacebookDataJob' })
+  // @Cron('0 */3 * * *', { name: 'getFacebookDataJob' })
   async getFacebookDataJob() {
     try {
       const facebookPages = await this.prisma.page.findMany({
@@ -126,6 +126,10 @@ export class SchedulerService {
         await db.metric.createMany({
           data: metricPayload.map(({ values: _values, ...item }) => ({
             ...item,
+            valueType:
+              item.description.split(':')[0] === 'Lifetime'
+                ? 'LIFETIME'
+                : 'DAILY',
             type: demographicMetrics.includes(item.name)
               ? 'DEMOGRAPHIC'
               : 'STATISTIC',

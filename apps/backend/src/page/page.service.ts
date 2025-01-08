@@ -33,10 +33,57 @@ export class PageService {
     return page;
   }
 
-  findAll() {
-    return this.prismaService.page.findMany({
+  async findAll() {
+    const metricsNeed = [
+      'page_follows',
+      'page_fans',
+      'page_post_engagements',
+      'page_impressions',
+      'page_video_views',
+    ];
+    // const metrics = await this.prismaService.metric
+    //   .groupBy({
+    //     by: ['name', 'title', 'description'],
+    //     where: {
+    //       name: {
+    //         in: metricsNeed,
+    //       },
+    //     },
+    //   })
+    //   .then((data) =>
+    //     Object.fromEntries(data.map((item) => [item.name, item])),
+    //   );
+
+    const metrics1 = await this.prismaService.$queryRaw`
+      SELECT m."name", SUM(v."value") as value 
+      FROM "Metric" as m 
+      FULL JOIN "Values" as v ON m."id" = v."metricId" 
+      WHERE m."valueType" = 'DAILY'
+      GROUP BY m."name" 
+      ORDER BY m."name" ASC;
+      `.then((data: { name: string; value: bigint }[]) =>
+      data
+        .filter((item) => metricsNeed.includes(item.name))
+        .map((item) => [item.name, Number(item.value)]),
+    );
+
+    const metrics2 = await this.prismaService.$queryRaw`
+      SELECT m."name", SUM(v."value"), MAX(v."end_time") as value 
+      FROM "Metric" as m 
+      FULL JOIN "Values" as v ON m."id" = v."metricId" 
+      WHERE m."valueType" = 'LIFETIME'
+      GROUP BY m."name"
+    `.then((data: { name: string; sum: bigint; value: Date }[]) =>
+      data
+        .filter((item) => metricsNeed.includes(item.name))
+        .map((item) => [item.name, Number(item.sum)]),
+    );
+
+    const pages = await this.prismaService.page.findMany({
       select: { id: true, name: true, isActive: true },
     });
+
+    return { pages, metrics: Object.fromEntries([...metrics1, ...metrics2]) };
   }
 
   async findOne(id: string) {

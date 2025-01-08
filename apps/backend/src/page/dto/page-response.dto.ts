@@ -79,9 +79,17 @@ class Page {
   isActive: boolean;
 }
 
-export class GetAllPageResponseDto {
+class Data {
   @ApiProperty({ type: [Page] })
-  data: Page[];
+  pages: Page[];
+
+  @ApiProperty({ additionalProperties: { type: 'number' } })
+  metrics: Record<string, number>;
+}
+
+export class GetAllPageResponseDto {
+  @ApiProperty({ type: Data })
+  data: Data;
 
   @ApiProperty()
   statusCode: number;

@@ -13,9 +13,12 @@ export const usePages = () => {
 
 export type PageData = {
   data: {
-    id: "string";
-    name: "string";
-    isActive: boolean;
-  }[];
+    pages: {
+      id: "string";
+      name: "string";
+      isActive: boolean;
+    }[];
+    metrics: Record<string, number>;
+  };
   statusCode: number;
 };

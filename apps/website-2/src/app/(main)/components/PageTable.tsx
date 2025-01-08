@@ -8,10 +8,10 @@ import { Button, Datatable } from "ui/components/";
 export default function PageTable() {
   const { data } = usePages();
 
-  return <Datatable columns={column} data={data?.data || []} />;
+  return <Datatable columns={column} data={data?.data.pages || []} />;
 }
 
-const column: ColumnDef<PageData["data"]["0"]>[] = [
+const column: ColumnDef<PageData["data"]["pages"]["0"]>[] = [
   {
     accessorKey: "id",
   },
@@ -20,12 +20,9 @@ const column: ColumnDef<PageData["data"]["0"]>[] = [
     cell(props) {
       return (
         <Link href={`/page/${props.row.original.id}`}>
-          <Button variant={"outline"}>{props.row.original.name}</Button>;
+          <Button variant={"outline"}>{props.row.original.name}</Button>
         </Link>
       );
     },
-  },
-  {
-    accessorKey: "isActive",
   },
 ];
