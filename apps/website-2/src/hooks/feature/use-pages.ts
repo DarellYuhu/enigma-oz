@@ -1,11 +1,22 @@
 import { FacebookClient } from "@/lib/facebook-client";
+import { usePageConfigStore } from "@/stores/page-config-store";
 import { useQuery } from "@tanstack/react-query";
 
 export const usePages = () => {
+  const { from, to } = usePageConfigStore();
+
   return useQuery({
     queryKey: ["pages"],
     queryFn: async (): Promise<PageData["data"]> => {
-      const { data }: { data: PageData } = await FacebookClient.get("/page");
+      const searchParams = new URLSearchParams();
+      if (from && to)
+        searchParams.set(
+          "date",
+          [from.toISOString(), to.toISOString()].join(",")
+        );
+      const { data }: { data: PageData } = await FacebookClient.get(
+        "/page?" + searchParams.toString()
+      );
       return data.data;
     },
   });

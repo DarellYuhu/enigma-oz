@@ -34,7 +34,7 @@ export class PageService {
     return page;
   }
 
-  async findAll() {
+  async findAll(date?: Date[]) {
     const metricsNeed = [
       'page_follows',
       'page_fans',
@@ -60,6 +60,7 @@ export class PageService {
       FROM "Metric" as m 
       FULL JOIN "Values" as v ON m."id" = v."metricId" 
       WHERE m."valueType" = 'DAILY'
+      AND v."end_time" >= ${date?.[0]} AND v."end_time" <= ${date?.[1]}
       GROUP BY m."name" 
       ORDER BY m."name" ASC;
       `.then((data: { name: string; value: bigint }[]) =>
@@ -73,6 +74,7 @@ export class PageService {
       FROM "Metric" as m 
       FULL JOIN "Values" as v ON m."id" = v."metricId" 
       WHERE m."valueType" = 'LIFETIME'
+      AND v."end_time" >= ${date?.[0]} AND v."end_time" <= ${date?.[1]}
       GROUP BY m."name"
     `.then((data: { name: string; sum: bigint; value: Date }[]) =>
       data
@@ -88,6 +90,12 @@ export class PageService {
       .findMany({
         include: {
           Values: {
+            where: {
+              end_time: {
+                gte: date ? date[0] : undefined,
+                lte: date ? date[1] : undefined,
+              },
+            },
             orderBy: {
               end_time: 'asc',
             },

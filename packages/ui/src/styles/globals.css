@@ -93,9 +93,9 @@ body {
 }
 
 @layer base {
-  /* * {
+  * {
     @apply border-border;
-  } */
+  }
   body {
     @apply font-sans antialiased;
   }

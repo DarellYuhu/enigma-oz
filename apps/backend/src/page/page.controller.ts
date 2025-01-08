@@ -7,6 +7,7 @@ import {
   BadRequestException,
   ConflictException,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { PageService } from './page.service';
 import { CreatePageDto } from './dto/create-page.dto';
@@ -43,8 +44,9 @@ export class PageController {
 
   @ApiOkResponse({ type: GetAllPageResponseDto })
   @Get()
-  findAll() {
-    return this.pageService.findAll();
+  findAll(@Query() query: { date?: string }) {
+    const date = query.date?.split(',').map((date: string) => new Date(date));
+    return this.pageService.findAll(date);
   }
 
   @ApiOkResponse({ type: GetPageByIdResponseDto })
