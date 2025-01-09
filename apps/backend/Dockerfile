@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:20.18-alpine3.20 AS base
+FROM node:22-alpine3.20 AS base
 
 # 1. Setup builder
 FROM base AS setup
@@ -39,7 +39,7 @@ COPY --from=builder --chown=nestjs:nodejs /app/apps/backend/node_modules/.prisma
 USER nestjs
 
 # Expose the application port
-EXPOSE 3001
+EXPOSE 3002
 
 # Command to run the application
 CMD ["node", "src/main"]

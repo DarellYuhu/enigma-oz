@@ -1,6 +1,6 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
@@ -24,7 +24,7 @@ export const RechartArea = (props: Props) => {
         {
           [props.dataKey]: {
             label: props.label,
-            color: "hsl(var(--chart-1))",
+            color: "hsl(var(--chart-6))",
           },
         } satisfies ChartConfig
       }
@@ -46,6 +46,12 @@ export const RechartArea = (props: Props) => {
           tickFormatter={(value) => new Date(value).toLocaleDateString("en-US")}
           hide={props.xAxisHide}
         />
+        <YAxis
+          dataKey={props.dataKey}
+          tickLine={false}
+          axisLine={false}
+          // tickFormatter={(value) => abbreviateNumber(value)}
+        />
         <ChartTooltip
           cursor={false}
           content={<ChartTooltipContent indicator="line" />}
@@ -53,9 +59,9 @@ export const RechartArea = (props: Props) => {
         <Area
           dataKey={props.dataKey}
           type="basis"
-          fill="#22c55e"
+          fill="hsl(var(--chart-6))"
           fillOpacity={0.4}
-          stroke="#22c55e"
+          stroke="hsl(var(--chart-6))"
         />
       </AreaChart>
     </ChartContainer>

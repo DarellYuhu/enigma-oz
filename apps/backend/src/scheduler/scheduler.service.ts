@@ -20,8 +20,8 @@ export class SchedulerService {
     private httpService: HttpService,
   ) {}
 
-  @Cron('*/5 * * * * *', { name: 'getFacebookDataJob' })
-  // @Cron('0 */3 * * *', { name: 'getFacebookDataJob' })
+  // @Cron('*/5 * * * * *', { name: 'getFacebookDataJob' })
+  @Cron('0 */3 * * *', { name: 'getFacebookDataJob' })
   async getFacebookDataJob() {
     try {
       const facebookPages = await this.prisma.page.findMany({
@@ -32,7 +32,7 @@ export class SchedulerService {
 
       groups.map((batch) => this.getFacebookData(batch));
     } finally {
-      this.schedulerRegistry.deleteCronJob('getFacebookDataJob');
+      // this.schedulerRegistry.deleteCronJob('getFacebookDataJob');
     }
   }
 

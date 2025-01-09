@@ -4,6 +4,7 @@ import { usePages } from "@/hooks/feature/use-pages";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
   RechartArea,
@@ -17,6 +18,10 @@ export default function TimeSeries() {
       <Card>
         <CardHeader>
           <CardTitle>Engagements</CardTitle>
+          <CardDescription>
+            The number of times people have engaged with your posts through
+            like, comments and shares and more.
+          </CardDescription>
         </CardHeader>
         <CardContent className="h-96">
           <RechartArea
@@ -30,7 +35,11 @@ export default function TimeSeries() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Followers</CardTitle>
+          <CardTitle>New Follows</CardTitle>
+          <CardDescription>
+            The number of times your Facebook Pages or profiles was followed in
+            the selected time period
+          </CardDescription>
         </CardHeader>
         <CardContent className="h-96">
           <RechartArea
@@ -45,6 +54,10 @@ export default function TimeSeries() {
       <Card>
         <CardHeader>
           <CardTitle>Impressions</CardTitle>
+          <CardDescription>
+            The number of times any content from your Page or about your Pages
+            entered a person&apos;s screen.
+          </CardDescription>
         </CardHeader>
         <CardContent className="h-96">
           <RechartArea
@@ -59,6 +72,9 @@ export default function TimeSeries() {
       <Card>
         <CardHeader>
           <CardTitle>Likes</CardTitle>
+          <CardDescription>
+            The number of new people who have liked your Pages.
+          </CardDescription>
         </CardHeader>
         <CardContent className="h-96">
           <RechartArea
@@ -73,6 +89,10 @@ export default function TimeSeries() {
       <Card>
         <CardHeader>
           <CardTitle>Video Views</CardTitle>
+          <CardDescription>
+            Total number of times videos have been viewed for more than 3
+            seconds.
+          </CardDescription>
         </CardHeader>
         <CardContent className="h-96">
           <RechartArea

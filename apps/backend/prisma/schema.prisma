@@ -76,6 +76,7 @@ model Values {
 
 enum Role {
   ADMIN
+  VIEWER
 }
 
 enum MetricType {

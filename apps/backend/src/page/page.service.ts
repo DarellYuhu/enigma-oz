@@ -3,12 +3,14 @@ import { CreatePageDto } from './dto/create-page.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FacebookService } from 'src/facebook/facebook.service';
 import { format } from 'date-fns';
+import { SchedulerService } from 'src/scheduler/scheduler.service';
 
 @Injectable()
 export class PageService {
   constructor(
     private prismaService: PrismaService,
     private facebookService: FacebookService,
+    private schedulerService: SchedulerService,
   ) {}
 
   async create(createPageDto: CreatePageDto) {
@@ -177,6 +179,11 @@ export class PageService {
     };
 
     return data;
+  }
+
+  async trigger() {
+    this.schedulerService.getFacebookDataJob();
+    return 'success';
   }
 
   // update(id: number, _updatePageDto: UpdatePageDto) {

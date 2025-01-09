@@ -5,10 +5,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { FacebookModule } from 'src/facebook/facebook.module';
+import { SchedulerService } from 'src/scheduler/scheduler.service';
 
 @Module({
   imports: [HttpModule, ConfigModule, FacebookModule],
   controllers: [PageController],
-  providers: [PageService, PrismaService],
+  providers: [PageService, PrismaService, SchedulerService],
 })
 export class PageModule {}

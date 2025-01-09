@@ -2,6 +2,7 @@
 
 import { usePages } from "@/hooks/feature/use-pages";
 import { usePageConfigStore } from "@/stores/page-config-store";
+import { signOut } from "next-auth/react";
 import { Button, DateRangePicker } from "ui/components/";
 
 export default function Configuration() {
@@ -18,6 +19,9 @@ export default function Configuration() {
       />
       <Button disabled={!from || !to} onClick={() => refetch()}>
         Apply
+      </Button>
+      <Button onClick={() => signOut()} variant={"destructive"}>
+        Logout
       </Button>
     </div>
   );

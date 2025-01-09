@@ -49,6 +49,11 @@ export class PageController {
     return this.pageService.findAll(date);
   }
 
+  @Get('trigger')
+  trigger() {
+    return this.pageService.trigger();
+  }
+
   @ApiOkResponse({ type: GetPageByIdResponseDto })
   @Get(':id')
   findOne(@Param('id') id: string) {

@@ -15,6 +15,7 @@ export class AuthService {
   async signIn(signInAuthDto: SignInAuthDto) {
     const user = await this.prisma.user.findUnique({
       where: { username: signInAuthDto.username },
+      omit: { createdAt: true, updatedAt: true },
     });
     if (!user)
       throw new UnauthorizedException('Username or password is incorrect');
@@ -29,7 +30,7 @@ export class AuthService {
       role: rest.role,
     };
     const token = this.jwtService.sign(tokenPayload);
-    return { token, userId: rest.id };
+    return { token, user: rest };
   }
 
   findAll() {
