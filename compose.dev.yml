@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:latest
+    env_file:
+      - .env.development
+    ports:
+      - 5433:5432
+    volumes:
+      - dev-data:/var/lib/postgresql/data
+
+volumes:
+  dev-data:
+    name: enigma_dev-data
+    external: true

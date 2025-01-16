@@ -4,7 +4,6 @@ import {
   CartesianGrid,
   Cell,
   LabelList,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from "recharts";
@@ -30,61 +29,60 @@ const HorizontalBarChart = ({
   onBarSelect,
 }: Props) => {
   return (
-    <ResponsiveContainer>
-      <ChartContainer
-        config={{
-          [labelKey]: {
-            label: label,
-            color: "hsl(var(--chart-1))",
-          },
+    <ChartContainer
+      className="h-full w-full"
+      config={{
+        [labelKey]: {
+          label: label,
+          color: "hsl(var(--chart-1))",
+        },
+      }}
+    >
+      <BarChart
+        accessibilityLayer
+        data={data}
+        layout="vertical"
+        margin={{
+          right: 16,
         }}
       >
-        <BarChart
-          accessibilityLayer
-          data={data}
-          layout="vertical"
-          margin={{
-            right: 16,
-          }}
-        >
-          <CartesianGrid horizontal={false} />
-          <XAxis type="number" dataKey={dataKey} hide />
-          <YAxis
-            dataKey={labelKey}
-            type="category"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            hide
-          />
-          <ChartTooltip
-            cursor={false}
-            content={
-              <ChartTooltipContent hideLabel={hidelabel} indicator="line" />
-            }
-          />
-          <Bar dataKey={dataKey} radius={5} fill="#c4e5f3">
-            {data.map((entry, index) => (
-              <Cell
-                fill={selectedId !== entry.channel_id ? "#87cfed" : "#c4e5f3"}
-                key={`cell-${index}`}
-                onClick={() =>
-                  onBarSelect &&
-                  onBarSelect(entry as YoutubeTopChannels["tc"]["0"])
-                }
-              />
-            ))}
-            <LabelList
-              dataKey={labelKey}
-              position="insideLeft"
-              offset={8}
-              className="fill-[#000000]"
-              fontSize={12}
+        <CartesianGrid horizontal={false} />
+        <XAxis type="number" dataKey={dataKey} hide />
+        <YAxis
+          dataKey={labelKey}
+          type="category"
+          tickLine={false}
+          tickMargin={10}
+          axisLine={false}
+          hide
+        />
+        <ChartTooltip
+          cursor={false}
+          content={
+            <ChartTooltipContent hideLabel={hidelabel} indicator="line" />
+          }
+        />
+        <Bar dataKey={dataKey} radius={5} fill="#c4e5f3">
+          {data.map((entry, index) => (
+            <Cell
+              fill={selectedId !== entry.channel_id ? "#87cfed" : "#c4e5f3"}
+              key={`cell-${index}`}
+              onClick={() =>
+                onBarSelect &&
+                onBarSelect(entry as YoutubeTopChannels["tc"]["0"])
+              }
             />
-          </Bar>
-        </BarChart>
-      </ChartContainer>
-    </ResponsiveContainer>
+          ))}
+          <LabelList
+            dataKey={labelKey}
+            position="insideLeft"
+            offset={8}
+            className="fill-[#000000]"
+            fontSize={12}
+          />
+        </Bar>
+      </BarChart>
+    </ChartContainer>
   );
 };
 

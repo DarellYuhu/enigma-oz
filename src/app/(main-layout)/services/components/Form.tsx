@@ -41,6 +41,11 @@ const Form = () => {
         url: "",
         type: "TWITTER",
       },
+      facebook: {
+        id: "facebook",
+        url: "",
+        type: "FACEBOOK",
+      },
     },
   });
 
@@ -63,7 +68,7 @@ const Form = () => {
         {}
       );
 
-      const missingFields = ["twitter", "youtube", "tiktok"].filter(
+      const missingFields = ["twitter", "youtube", "tiktok", "facebook"].filter(
         (field) => !(field in newValues)
       );
 
@@ -135,6 +140,25 @@ const Form = () => {
                   <FormControl>
                     <Input
                       placeholder="Twitter API URL"
+                      type="url"
+                      {...field}
+                    />
+                  </FormControl>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name={"facebook.url"}
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="grid w-full items-center gap-4">
+                <div className="flex flex-col space-y-1.5">
+                  <FormLabel>Facebook</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Facebook API URL"
                       type="url"
                       {...field}
                     />

@@ -1,6 +1,7 @@
 import { Menus } from "@/components/sidebar/AppSidebar";
 import {
   Clapperboard,
+  Facebook,
   MonitorStop,
   ServerCrash,
   TrendingUp,
@@ -55,6 +56,18 @@ export const adminMenus: Menus = [
           {
             title: "Projects",
             url: "/youtube-projects",
+          },
+        ],
+      },
+      {
+        title: "Facebook",
+        url: "",
+        icon: Facebook,
+        isActive: true,
+        subMenus: [
+          {
+            title: "Projects",
+            url: "/facebook-projects",
           },
         ],
       },

@@ -65,7 +65,6 @@ const SignIn = async (props: {
                     props.searchParams.callbackUrl ?? "/"
                   );
                   params.set("error", error.type);
-                  console.log(params.toString());
                   return redirect(`/sign-in?${params.toString()}`);
                 }
                 throw error;

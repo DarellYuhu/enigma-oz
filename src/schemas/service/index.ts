@@ -17,6 +17,11 @@ const putServices = z.object({
     url: z.string().url("Invalid URL").min(1, "Required"),
     type: z.nativeEnum(Type),
   }),
+  facebook: z.object({
+    id: z.enum(["youtube", "tiktok", "twitter", "facebook"]),
+    url: z.string().url("Invalid URL").min(1, "Required"),
+    type: z.nativeEnum(Type),
+  }),
 });
 
 const ServiceSchema = {

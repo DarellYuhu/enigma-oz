@@ -21,4 +21,11 @@ const getTwitterApi = async () => {
   return res?.url;
 };
 
-export { getYoutubeApi, getTiktokApi, getTwitterApi };
+const getFacebookApi = async () => {
+  const res = await prisma.apiUrl.findUnique({
+    where: { id: "facebook" },
+  });
+  return res?.url;
+};
+
+export { getYoutubeApi, getTiktokApi, getTwitterApi, getFacebookApi };

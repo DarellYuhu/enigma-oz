@@ -1,5 +1,5 @@
 {
-  "name": "enigma",
+  "name": "enigma-oz",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,12 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "db:up:dev": "docker compose -f compose.dev.yml up -d",
+    "db:down:dev": "docker compose -f compose.dev.yml down",
     "db:migrate": "dotenv -e .env.development prisma migrate dev",
     "db:deploy": "dotenv -e .env.production prisma migrate deploy",
     "db:seed": "dotenv -e .env.production npx prisma db seed",
-    "docker:build": "docker build -t enigma .",
-    "docker:up": "docker compose up --wait",
-    "docker:save": "docker save enigma | gzip > enigma-docker.tar.gz"
+    "docker:build": "docker build -t enigma-oz:latest -f docker/prod/Dockerfile .",
+    "docker:save": "docker save enigma-oz:latest | gzip > enigma-docker.tar.gz"
   },
   "packageManager": "npm@10.8.2",
   "prisma": {
@@ -23,7 +24,7 @@
     "@hono/node-server": "^1.13.7",
     "@hookform/resolvers": "^3.9.1",
     "@next/bundle-analyzer": "^14.2.15",
-    "@prisma/client": "^5.21.1",
+    "@prisma/client": "^6.2.1",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",
@@ -75,6 +76,7 @@
     "react-dom": "^18",
     "react-google-charts": "^5.2.1",
     "react-hook-form": "^7.53.2",
+    "react-icons": "^5.4.0",
     "react-map-gl": "^7.1.7",
     "react-markdown": "^9.0.1",
     "reaviz": "^15.18.5",
@@ -100,7 +102,7 @@
     "eslint": "8.57.1",
     "eslint-config-next": "14.2.16",
     "postcss": "^8.4.47",
-    "prisma": "^5.21.1",
+    "prisma": "^6.2.1",
     "tailwindcss": "^3.4.13",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
