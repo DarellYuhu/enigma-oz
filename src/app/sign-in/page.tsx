@@ -35,7 +35,9 @@ const SignIn = async (props: {
             height={200}
             className="w-20 h-20 object-cover rounded-lg"
           />
-          <h1 className="font-bold text-lg">Cyber Inteligence Project</h1>
+          <h1 className="font-bold text-lg">
+            {process.env.NEXT_PUBLIC_APP_NAME}
+          </h1>
         </div>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Login</CardTitle>

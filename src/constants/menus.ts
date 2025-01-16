@@ -12,12 +12,12 @@ export const adminMenus: Menus = [
   {
     title: "Platform",
     items: [
-      {
-        title: "Online Public Attention",
-        url: "/trends",
-        icon: TrendingUp,
-        isActive: true,
-      },
+      // {
+      //   title: "Online Public Attention",
+      //   url: "/trends",
+      //   icon: TrendingUp,
+      //   isActive: true,
+      // },
       {
         title: "Tiktok",
         url: "",

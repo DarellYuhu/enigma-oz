@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const until = searchParams.get("until");
   const details = searchParams.get("details");
 
-  const response = await fetch(`http://172.233.75.107:8912/api/trends`, {
+  const response = await fetch(`http://172.233.75.107:89124/api/trends`, {
     method: "POST",
     body: JSON.stringify({
       type: "get-trends",

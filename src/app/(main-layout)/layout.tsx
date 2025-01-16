@@ -45,7 +45,9 @@ export default function MainLayout({
                 <Breadcrumb>
                   <BreadcrumbList>
                     <BreadcrumbItem>
-                      <BreadcrumbPage>Enigma</BreadcrumbPage>
+                      <BreadcrumbPage>
+                        {process.env.NEXT_PUBLIC_APP_NAME}
+                      </BreadcrumbPage>
                     </BreadcrumbItem>
                   </BreadcrumbList>
                 </Breadcrumb>
