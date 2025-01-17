@@ -18,6 +18,17 @@ export const COLORS = [
   "#B9AFAB",
 ];
 
+export const CYBERTRON_COLORS = [
+  "#2d60e8",
+  "#2c77e0",
+  "#2b8dd8",
+  "#2aa1d1",
+  "#29b5ca",
+  "#28c8c3",
+  "#27dcbc",
+  "#26efb5",
+];
+
 export const GLASBEY_COLORS = [
   "#ff0000",
   "#0000ff",

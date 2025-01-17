@@ -1,3 +1,4 @@
+import { CYBERTRON_COLORS } from "@/constants";
 import useStatisticDateStore from "@/store/statistic-date-store";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -47,6 +48,8 @@ export default function useFacebookStatistics() {
         top_domains: data.top_domains.name.map((name, index) => ({
           name,
           value: data.top_domains.value[index],
+          fill: CYBERTRON_COLORS[index % CYBERTRON_COLORS.length],
+          // fill: chroma.random().alpha(0.7).hex(),
         })),
       };
 

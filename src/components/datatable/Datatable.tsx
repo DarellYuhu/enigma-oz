@@ -15,6 +15,7 @@ import {
   getSortedRowModel,
   OnChangeFn,
   RowSelectionState,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import DataTablePagination from "./DataTablePagination";
@@ -26,6 +27,7 @@ interface DataTableProps<TData, TValue> {
   className?: string;
   pagination?: boolean;
   initialPageSize?: number;
+  initialSorting?: SortingState;
   enableMultiRowSelection?: boolean;
   onRowSelectionChange?: OnChangeFn<RowSelectionState>;
 }
@@ -36,6 +38,7 @@ function Datatable<TData, TValue>({
   className,
   pagination = true,
   initialPageSize = 5,
+  initialSorting,
   enableMultiRowSelection,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
@@ -49,6 +52,7 @@ function Datatable<TData, TValue>({
       pagination: {
         pageSize: initialPageSize,
       },
+      sorting: initialSorting,
     },
   });
 

@@ -7,7 +7,6 @@ export const GET = async (
 ) => {
   const searchParams = req.nextUrl.searchParams;
   const date = searchParams.get("date");
-  const window = searchParams.get("window");
   const response = await fetch(
     `${await getFacebookApi()}/api/v2/project/topics`,
     {
@@ -16,7 +15,7 @@ export const GET = async (
         project: params.id,
         type: "topics",
         date,
-        window,
+        window: 4,
       }),
       headers: {
         "Content-Type": "application/json",

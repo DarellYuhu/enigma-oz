@@ -1,46 +1,53 @@
-import { Pie, PieChart } from "recharts";
+import { Legend, Pie, PieChart } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
+import abbreviateNumber from "@/utils/abbreviateNumber";
 
 type Props = {
-  config: Record<string, { label: string; color: string }>;
-  data: { [key: string]: number | string }[];
+  data: any[];
+  config: ChartConfig;
   dataKey: string;
   labelKey: string;
-  outerRadius: number;
-  innerRadius: number;
-  tooltip?: boolean;
 };
-const RechartPie = ({ tooltip = true, ...props }: Props) => {
+
+export default function RechartPie(props: Props) {
   return (
     <ChartContainer
-      style={{ width: "100%", height: "100%" }}
-      config={props.config satisfies ChartConfig}
+      config={props.config}
+      className="mx-auto aspect-square px-0 h-full"
     >
       <PieChart>
-        {tooltip && (
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent hideLabel />}
-          />
-        )}
+        <ChartTooltip
+          content={<ChartTooltipContent nameKey={props.labelKey} hideLabel />}
+        />
+        <Legend />
         <Pie
           startAngle={360 + 90}
           endAngle={90}
-          startOffset={90}
           data={props.data}
           dataKey={props.dataKey}
-          nameKey={props.labelKey}
-          outerRadius={props.outerRadius}
-          innerRadius={props.innerRadius}
+          label={({ payload, ...labelProps }) => {
+            return (
+              <text
+                cx={labelProps.cx}
+                cy={labelProps.cy}
+                x={labelProps.x}
+                y={labelProps.y}
+                textAnchor={labelProps.textAnchor}
+                dominantBaseline={labelProps.dominantBaseline}
+                fill="hsla(var(--foreground))"
+              >
+                {abbreviateNumber(payload[props.dataKey])}
+              </text>
+            );
+          }}
+          //   label
         />
       </PieChart>
     </ChartContainer>
   );
-};
-
-export default RechartPie;
+}

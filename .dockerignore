@@ -8,3 +8,4 @@ docker
 .git
 uploads
 enigma-docker.tar.gz
+*docker.tar.gz

@@ -10,8 +10,8 @@ import PH_JSON from "@/data/geojson/ph.json";
 import { MAP_THEME } from "@/constants";
 import useTrends from "@/hooks/features/trends/useTrends";
 import SingleSelect from "@/components/SingleSelect";
-import RechartPie from "@/components/charts/RechartPie";
 import { Skeleton } from "@/components/ui/skeleton";
+import RechartDoughnut from "@/components/charts/RechartDoughnut";
 
 const Maps = ({ details }: { details: string }) => {
   const [type, setType] = useState<"pct_total" | "1w" | "1m">("1m");
@@ -146,7 +146,7 @@ const Maps = ({ details }: { details: string }) => {
                     <div>
                       <div className="h-20 w-20">
                         {feature.data && (
-                          <RechartPie
+                          <RechartDoughnut
                             tooltip={false}
                             outerRadius={40}
                             innerRadius={20}
