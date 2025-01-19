@@ -14,8 +14,13 @@ type Props = {
   outerRadius: number;
   innerRadius: number;
   tooltip?: boolean;
+  legend?: boolean;
 };
-const RechartDoughnut = ({ tooltip = true, ...props }: Props) => {
+const RechartDoughnut = ({
+  tooltip = true,
+  legend = true,
+  ...props
+}: Props) => {
   return (
     <ChartContainer
       style={{ width: "100%", height: "100%" }}
@@ -38,7 +43,9 @@ const RechartDoughnut = ({ tooltip = true, ...props }: Props) => {
           outerRadius={props.outerRadius}
           innerRadius={props.innerRadius}
         />
-        <Legend align="right" layout="vertical" verticalAlign="middle" />
+        {legend && (
+          <Legend align="right" layout="vertical" verticalAlign="middle" />
+        )}
       </PieChart>
     </ChartContainer>
   );

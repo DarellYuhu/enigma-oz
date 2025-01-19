@@ -13,12 +13,12 @@ export const adminMenus: Menus = [
   {
     title: "Platform",
     items: [
-      // {
-      //   title: "Online Public Attention",
-      //   url: "/trends",
-      //   icon: TrendingUp,
-      //   isActive: true,
-      // },
+      {
+        title: "Online Public Attention",
+        url: "/trends",
+        icon: TrendingUp,
+        isActive: true,
+      },
       {
         title: "Tiktok",
         url: "",
@@ -142,6 +142,18 @@ export const analystMenus: Menus = [
           {
             title: "Projects",
             url: "/youtube-projects",
+          },
+        ],
+      },
+      {
+        title: "Facebook",
+        url: "",
+        icon: Facebook,
+        isActive: true,
+        subMenus: [
+          {
+            title: "Projects",
+            url: "/facebook-projects",
           },
         ],
       },

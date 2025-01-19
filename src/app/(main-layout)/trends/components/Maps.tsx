@@ -163,6 +163,7 @@ const Maps = ({ details }: { details: string }) => {
                             }))}
                             dataKey="value"
                             labelKey="key"
+                            legend={false}
                           />
                         )}
                       </div>

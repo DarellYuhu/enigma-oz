@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get("category");
   const since = searchParams.get("since");
   const until = searchParams.get("until");
-  const response = await fetch(`http://172.233.75.107:89124/api/geo`, {
+  const response = await fetch(`http://172.233.75.107:8912/api/geo`, {
     method: "POST",
     body: JSON.stringify({
       type: "get-region-top",

@@ -33,7 +33,7 @@ export default function Topics() {
             <Tabs.TabsList className="flex flex-row w-full bg-gray-300 rounded-md p-2 gap-2">
               {Object.entries(data.classes)
                 .filter(([_, value]) => value.representation !== "")
-                .map(([key, _value], index) => (
+                .map((_, index) => (
                   <Tabs.TabsTrigger
                     key={index}
                     value={index.toString()}
