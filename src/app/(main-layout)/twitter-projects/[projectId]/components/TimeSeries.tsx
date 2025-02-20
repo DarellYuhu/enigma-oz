@@ -18,6 +18,10 @@ import SearchInput from "@/components/SearchInput";
 import useProjectInfo from "@/hooks/features/useProjectInfo";
 import dateFormatter from "@/utils/dateFormatter";
 import { Skeleton } from "@/components/ui/skeleton";
+import AreaChart2 from "@/components/charts/AreaChart2";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import CsvDownload from "react-json-to-csv";
 
 const TimeSeries = ({ projectId }: { projectId: string }) => {
   const [string, setString] = useState("");
@@ -42,6 +46,8 @@ const TimeSeries = ({ projectId }: { projectId: string }) => {
     }
   }, [projectInfo?.lastUpdate]);
 
+  const handleDownload = () => {};
+
   if (isPending)
     return (
       <div className="grid grid-cols-2 gap-4 h-60">
@@ -59,10 +65,7 @@ const TimeSeries = ({ projectId }: { projectId: string }) => {
             <CardDescription>Accounts</CardDescription>
           </CardHeader>
           <CardContent className="h-60">
-            <BarChart2
-              yAxis={false}
-              topLabel={false}
-              xAxis={false}
+            <AreaChart2
               data={data.normalized[type]}
               dataKey="authors"
               labelKey="date"
@@ -75,10 +78,7 @@ const TimeSeries = ({ projectId }: { projectId: string }) => {
             <CardDescription>Tweets</CardDescription>
           </CardHeader>
           <CardContent className="h-60">
-            <BarChart2
-              yAxis={false}
-              topLabel={false}
-              xAxis={false}
+            <AreaChart2
               data={data.normalized[type]}
               dataKey="tweets"
               labelKey="date"
@@ -88,6 +88,11 @@ const TimeSeries = ({ projectId }: { projectId: string }) => {
         </Card>
       </div>
       <div className="absolute top-4 right-4 flex flex-row gap-3">
+        <CsvDownload data={data.normalized[type]} delimiter=",">
+          <Button variant={"outline"} onClick={handleDownload}>
+            <Download />
+          </Button>
+        </CsvDownload>
         <DateRangePicker
           date={{ from: date?.since, to: date?.until }}
           setDate={(value) =>

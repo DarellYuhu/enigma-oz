@@ -12,6 +12,8 @@ import { useState } from "react";
 import useAccountStore from "../store/account-config-store";
 import dateFormatter from "@/utils/dateFormatter";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import { Badge, badgeVariants } from "@/components/ui/badge";
 
 const TopCentralityAccount = ({ projectId }: { projectId: string }) => {
   const [type, setType] =
@@ -78,6 +80,17 @@ const columns: ColumnDef<AccountNetwork["network"]["nodes"][0]>[] = [
   {
     accessorKey: "user_screen_name",
     header: "Name",
+    cell(props) {
+      return (
+        <Link
+          href={`https://x.com/${props.row.original.user_screen_name}`}
+          target="_blank"
+          className={badgeVariants({ variant: "outline" })}
+        >
+          {props.row.original.user_screen_name}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "num_followers",

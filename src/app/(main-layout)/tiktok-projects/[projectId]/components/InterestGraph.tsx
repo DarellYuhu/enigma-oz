@@ -11,14 +11,17 @@ import useGraphConfigStore from "../store/graph-config-store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Expand } from "lucide-react";
+import { useConfigStore } from "../store/config-store";
 
 const InterestGraph = ({ projectId }: { projectId: string }) => {
   const [label, setLabel] = useState(false);
   const [node, setNode] = useState<any>(null);
+  const { window } = useConfigStore();
   const { from, to } = useGraphConfigStore();
+  const { selectedNodes } = useConfigStore();
   const { data, isPending } = useTiktokInterestNet2({
     projectId,
-    window: 3,
+    window,
     date: to!,
   });
 
@@ -42,6 +45,7 @@ const InterestGraph = ({ projectId }: { projectId: string }) => {
             setNode(null);
           }
         }}
+        selectedNodes={selectedNodes}
         showDynamicLabels={label}
       />
       {node ? (

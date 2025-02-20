@@ -16,6 +16,7 @@ type Props<T = unknown> = {
 const AreaChart2 = ({ data, dataKey, label, labelKey }: Props) => {
   return (
     <ChartContainer
+      className="w-full h-full"
       config={
         {
           [labelKey]: {

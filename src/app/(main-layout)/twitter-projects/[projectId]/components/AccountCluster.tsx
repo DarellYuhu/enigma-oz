@@ -31,6 +31,8 @@ import HorizontalBarChart from "@/components/charts/HorizontalBarChart";
 import useAccountStore from "../store/account-config-store";
 import dateFormatter from "@/utils/dateFormatter";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import { badgeVariants } from "@/components/ui/badge";
 
 const colorScheme = chroma.scale(["#f87171", "#4ade80"]).colors(3);
 const scale = [
@@ -237,6 +239,17 @@ const columns: ColumnDef<ClusterInfo["authors"][0]>[] = [
   {
     accessorKey: "user_screen_name",
     header: "Author",
+    cell(props) {
+      return (
+        <Link
+          href={`https://x.com/${props.row.original.user_screen_name}`}
+          target="_blank"
+          className={badgeVariants({ variant: "outline" })}
+        >
+          {props.row.original.user_screen_name}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "reply_count",

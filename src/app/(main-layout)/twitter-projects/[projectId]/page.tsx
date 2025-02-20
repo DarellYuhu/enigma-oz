@@ -38,30 +38,30 @@ const TwitterProjectDetail = ({
         </CardContent>
       </Card>
 
-      <div className="col-span-full">
+      <div className="col-span-full p-4 rounded-lg shadow-sm space-y-4 border">
         <HashtagConfig />
-      </div>
 
-      <Card className="col-span-full">
-        <CardHeader>
-          <CardTitle>Hashtag Evolution</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <HashtagEvoSankey projectId={params.projectId} />
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Hashtag Evolution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <HashtagEvoSankey projectId={params.projectId} />
+          </CardContent>
+        </Card>
 
-      <Card className="col-span-full relative">
-        <CardHeader>
-          <CardTitle>Hashtag Network</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <HashtagNetGraph projectId={params.projectId} />
-        </CardContent>
-      </Card>
+        <Card className=" relative">
+          <CardHeader>
+            <CardTitle>Hashtag Network</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <HashtagNetGraph projectId={params.projectId} />
+          </CardContent>
+        </Card>
 
-      <div className="col-span-full">
-        <HashtagClusters projectId={params.projectId} />
+        <div>
+          <HashtagClusters projectId={params.projectId} />
+        </div>
       </div>
 
       <Card className="col-span-full relative">

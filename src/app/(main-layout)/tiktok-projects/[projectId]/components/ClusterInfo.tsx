@@ -34,6 +34,7 @@ import {
 import Datatable from "@/components/datatable/Datatable";
 import { ColumnDef } from "@tanstack/react-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useConfigStore } from "../store/config-store";
 
 const colorScheme = chroma.scale(["#f87171", "#4ade80"]).colors(3);
 const scale = [
@@ -52,12 +53,20 @@ const scale = [
 ];
 
 const ClusterInfo = ({ projectId }: { projectId: string }) => {
+  const { setSelectedNodes, window } = useConfigStore();
   const { to } = useGraphConfigStore();
   const { data, isPending } = useTiktokInterestNet2({
     projectId,
-    window: 3,
+    window,
     date: to!,
   });
+
+  const handleClusterSelection = (id: string) => {
+    const filtered = data?.normalized.network.nodes.filter(
+      (node) => node.data.class === id
+    );
+    setSelectedNodes(filtered ?? null);
+  };
 
   if (isPending)
     return (
@@ -84,6 +93,7 @@ const ClusterInfo = ({ projectId }: { projectId: string }) => {
         <Tabs.TabsList className="flex flex-row w-full bg-gray-300 rounded-md p-2 gap-2">
           {data?.normalized.hashtags.map((item, index) => (
             <Tabs.TabsTrigger
+              onClick={() => handleClusterSelection(item.id)}
               key={index}
               value={index.toString()}
               className={
@@ -108,7 +118,7 @@ const ClusterInfo = ({ projectId }: { projectId: string }) => {
               <CardHeader className="p-4">
                 <CardTitle className="text-base">Metrics</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="flex flex-row justify-evenly">
                   <div className="flex flex-col items-center">
                     {abbreviateNumber(item.total_views)}
@@ -128,6 +138,18 @@ const ClusterInfo = ({ projectId }: { projectId: string }) => {
                   <div className="flex flex-col items-center">
                     {abbreviateNumber(item.total_shares)}
                     <p className="text-sm">Shares</p>
+                  </div>
+                </div>
+                <Separator orientation="horizontal" className="" />
+                <div className="flex flex-row justify-evenly">
+                  <div className="flex flex-col items-center">
+                    {abbreviateNumber(item.num_contents)}
+                    <p className="text-sm">Contents</p>
+                  </div>
+                  <Separator orientation="vertical" className="h-11" />
+                  <div className="flex flex-col items-center">
+                    {abbreviateNumber(item.num_authors)}
+                    <p className="text-sm">Accounts</p>
                   </div>
                 </div>
               </CardContent>

@@ -17,10 +17,11 @@ import { toast } from "sonner";
 const HashtagNetGraph = ({ projectId }: { projectId: string }) => {
   const { date } = useHashtagStore();
   const { setHashtag, setDate } = useClusterStore();
+  const { window } = useHashtagStore();
   const { data, isPending } = useTwitterHashtagNet2({
     projectId,
     date: dateFormatter("ISO", date),
-    window: 2,
+    window,
   });
 
   useEffect(() => {

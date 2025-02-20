@@ -11,6 +11,9 @@ import adjustDateByFactor from "@/utils/adjustDateByFactor";
 import dateFormatter from "@/utils/dateFormatter";
 import useProjectInfo from "@/hooks/features/useProjectInfo";
 import { Skeleton } from "@/components/ui/skeleton";
+import CsvDownload from "react-json-to-csv";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 const ClusterStatistics = ({ projectId }: { projectId: string }) => {
   const { data: projectInfo } = useProjectInfo("TWITTER", projectId);
@@ -48,6 +51,12 @@ const ClusterStatistics = ({ projectId }: { projectId: string }) => {
         xAxisHide={true}
       />
       <div className="absolute right-4 top-4 flex flex-row gap-4">
+        <CsvDownload data={data?.normalized ?? []} delimiter=",">
+          <Button variant={"outline"}>
+            <Download />
+          </Button>
+        </CsvDownload>
+
         <DateRangePicker
           date={{ from: date.since, to: date.until }}
           setDate={(value) =>
@@ -72,10 +81,6 @@ const selections = [
   {
     label: "Number of clusters in GC",
     value: "num_clusters_gc",
-  },
-  {
-    label: "Number of CC",
-    value: "num_cc",
   },
   {
     label: "Number of clusters",

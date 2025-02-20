@@ -49,17 +49,17 @@ const scale = [
 ];
 
 const HashtagClusters = ({ projectId }: { projectId: string }) => {
-  const { date: graphDate } = useHashtagStore();
+  const { date: graphDate, window } = useHashtagStore();
   const { hashtag, setHashtag } = useClusterStore();
   const graph = useTwitterHashtagNet2({
     projectId,
     date: graphDate && dateFormatter("ISO", graphDate),
-    window: 2,
+    window,
   });
   const clusterInfo = useTwitterHashtageClusterInfo({
     projectId,
     date: graph.data?.data.date,
-    window: 2,
+    window,
     cluster: hashtag,
   });
 
@@ -114,7 +114,7 @@ const HashtagClusters = ({ projectId }: { projectId: string }) => {
               <CardHeader className="p-4">
                 <CardTitle className="text-base">Metrics</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
                 <div className="flex flex-row justify-evenly">
                   <div className="flex flex-col items-center">
                     {abbreviateNumber(item.total_views)}
@@ -134,6 +134,18 @@ const HashtagClusters = ({ projectId }: { projectId: string }) => {
                   <div className="flex flex-col items-center">
                     {abbreviateNumber(item.total_replies)}
                     <p className="text-sm">Replies</p>
+                  </div>
+                </div>
+                <Separator orientation="horizontal" className="" />
+                <div className="flex flex-row justify-evenly">
+                  <div className="flex flex-col items-center">
+                    {abbreviateNumber(item.num_contents)}
+                    <p className="text-sm">Tweets</p>
+                  </div>
+                  <Separator orientation="vertical" className="h-11" />
+                  <div className="flex flex-col items-center">
+                    {abbreviateNumber(item.num_authors)}
+                    <p className="text-sm">Accounts</p>
                   </div>
                 </div>
               </CardContent>
