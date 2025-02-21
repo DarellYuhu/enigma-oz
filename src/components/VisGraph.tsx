@@ -57,7 +57,7 @@ interface VisGraphProps {
   type?: "interestNet" | "tagRelation";
   data: {
     nodes: Node[];
-    edges: Edge[];
+    edges?: Edge[];
   };
   options?: Options;
   events?: {
@@ -88,7 +88,7 @@ const VisGraph = ({
 
   useEffect(() => {
     nodes.current = new DataSet(data.nodes);
-    edges.current = new DataSet(data.edges);
+    edges.current = new DataSet(data.edges ?? []);
     network.current = new Network(
       container.current!,
       { nodes: nodes.current, edges: edges.current },

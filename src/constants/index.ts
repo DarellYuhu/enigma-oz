@@ -33,8 +33,8 @@ export const CYBERTRON_COLORS = [
 export const GLASBEY_COLORS = [
   "#ff0000",
   "#0000ff",
-  "#ffff00",
-  "#00ffff",
+  "#ffdc0b",
+  "#00c8b4",
   "#ff00ff",
   "#800000",
   "#008000",

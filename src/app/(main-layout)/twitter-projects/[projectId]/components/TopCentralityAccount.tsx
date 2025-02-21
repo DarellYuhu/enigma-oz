@@ -13,7 +13,7 @@ import useAccountStore from "../store/account-config-store";
 import dateFormatter from "@/utils/dateFormatter";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { Badge, badgeVariants } from "@/components/ui/badge";
+import { badgeVariants } from "@/components/ui/badge";
 
 const TopCentralityAccount = ({ projectId }: { projectId: string }) => {
   const [type, setType] =

@@ -9,7 +9,6 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import BarChart2 from "@/components/charts/BarChart2";
 import SingleSelect from "@/components/SingleSelect";
 import { useEffect, useState } from "react";
 import adjustDateByFactor from "@/utils/adjustDateByFactor";

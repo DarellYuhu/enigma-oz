@@ -2,6 +2,7 @@ import { Menus } from "@/components/sidebar/AppSidebar";
 import {
   Clapperboard,
   Facebook,
+  FileCheck2,
   MonitorStop,
   ServerCrash,
   TrendingUp,
@@ -17,6 +18,12 @@ export const adminMenus: Menus = [
         title: "Online Public Attention",
         url: "/trends",
         icon: TrendingUp,
+        isActive: true,
+      },
+      {
+        title: "Surveys",
+        url: "/surveys",
+        icon: FileCheck2,
         isActive: true,
       },
       {
@@ -56,6 +63,10 @@ export const adminMenus: Menus = [
           {
             title: "Projects",
             url: "/youtube-projects",
+          },
+          {
+            title: "Map",
+            url: "/youtube-map",
           },
         ],
       },
@@ -106,6 +117,12 @@ export const analystMenus: Menus = [
         isActive: true,
       },
       {
+        title: "Surveys",
+        url: "/surveys",
+        icon: FileCheck2,
+        isActive: true,
+      },
+      {
         title: "Tiktok",
         url: "",
         icon: Clapperboard,
@@ -142,6 +159,10 @@ export const analystMenus: Menus = [
           {
             title: "Projects",
             url: "/youtube-projects",
+          },
+          {
+            title: "Map",
+            url: "/youtube-map",
           },
         ],
       },
