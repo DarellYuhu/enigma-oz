@@ -153,8 +153,11 @@ export default function SurveysPage() {
                   <ChartTooltipContent
                     labelKey="date"
                     labelFormatter={(_, payload) => {
-                      const surveyor = payload[0].payload["1"]?.surveyor
-                        ? ` - ${payload[0].payload["1"]?.surveyor} surveyor`
+                      const firstObject = Object.values(
+                        payload[0].payload
+                      )[0] as { surveyor?: string };
+                      const surveyor = firstObject?.surveyor
+                        ? ` - ${firstObject?.surveyor} surveyor`
                         : "";
                       const date = new Date(
                         payload[0].payload.date
@@ -182,7 +185,7 @@ export default function SurveysPage() {
               {selected.map(({ label: value, value: key }, idx) => (
                 <Line
                   key={idx}
-                  name={`Line - ${value}`}
+                  name={`${type} - ${value}`}
                   dataKey={`${key}.value`}
                   stroke={COLORS[idx % COLORS.length]}
                   dot={false}

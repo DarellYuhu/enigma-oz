@@ -20,7 +20,6 @@ export default function useFacebookTopics() {
       const response = await fetch(url.toString());
       const data: FacebookTopics = await response.json();
       const articles = Object.groupBy(data.nodes, (node) => node.class);
-      console.log(articles);
       return { ...data, articles };
     },
   });

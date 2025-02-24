@@ -74,8 +74,21 @@ const HorizontalBarChart = ({
             />
           ))}
           <LabelList
+            content={({ value, y, height }) => {
+              return (
+                <text
+                  x={6}
+                  y={(y as number) + (height as number) / 2}
+                  fill="#000"
+                  textAnchor="left"
+                  dominantBaseline="middle"
+                >
+                  {value}
+                </text>
+              );
+            }}
             dataKey={labelKey}
-            position="insideLeft"
+            position="right"
             offset={8}
             className="fill-[#000000]"
             fontSize={12}
