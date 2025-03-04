@@ -176,8 +176,9 @@ export default function SurveysPage() {
 
               <YAxis domain={[0, 100]} />
               <XAxis
+                domain={["dataMin", "dataMax"]}
                 dataKey="date"
-                type="category"
+                type="number"
                 tickFormatter={(value: number) =>
                   new Date(value).toLocaleDateString()
                 }
@@ -190,7 +191,7 @@ export default function SurveysPage() {
                   stroke={COLORS[idx % COLORS.length]}
                   dot={false}
                   legendType="none"
-                  type={"natural"}
+                  type={"basis"}
                   connectNulls
                 />
               ))}
