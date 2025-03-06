@@ -19,11 +19,6 @@
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
-  "prettier": {
-    "plugins": [
-      "prettier-plugin-organize-imports"
-    ]
-  },
   "dependencies": {
     "@cosmograph/react": "^1.4.0",
     "@hono/node-server": "^1.13.7",

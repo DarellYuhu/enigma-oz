@@ -90,7 +90,7 @@ export const ApprovalCard = () => {
       }
     > = {};
     officialIds.forEach((id) => {
-      const { surveys, weekly } = (
+      const { surveys, ...data } = (
         approval.data as unknown as Approval["data"]
       )[id][type];
       const surveysMap: Record<number, string | null> = {};
@@ -102,9 +102,18 @@ export const ApprovalCard = () => {
         }
       }
       const weeklyMap: Record<number, number | null> = {};
-      if (weekly?.timestamp) {
-        for (let i = 0; i < weekly.timestamp.length; i++) {
-          weeklyMap[weekly.timestamp[i]] = weekly.value[i] ?? null;
+      if (data[seriesType as unknown as "weekly" | "monthly"]?.timestamp) {
+        for (
+          let i = 0;
+          i <
+          data[seriesType as unknown as "weekly" | "monthly"].timestamp.length;
+          i++
+        ) {
+          weeklyMap[
+            data[seriesType as unknown as "weekly" | "monthly"].timestamp[i]
+          ] =
+            data[seriesType as unknown as "weekly" | "monthly"].value[i] ??
+            null;
         }
       }
       officialMaps[id] = { surveysMap, surveyValueMap, weeklyMap };
@@ -140,6 +149,7 @@ export const ApprovalCard = () => {
 
     return result;
   }, [approval, type, seriesType]);
+
   return (
     <Card>
       <CardHeader>
