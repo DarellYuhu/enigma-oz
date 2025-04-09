@@ -42,6 +42,7 @@ import Link from "next/link";
 import { badgeVariants } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PiGraph } from "react-icons/pi";
 
 type Project = {
   projectId: string;
@@ -250,17 +251,25 @@ const columns: ColumnProps = (isDisabled, setSelected) => [
     },
     cell: ({ row }) => {
       return (
-        <DialogTrigger
-          className={buttonVariants({ size: "sm", variant: "outline" })}
-          onClick={(event) => {
-            setSelected(row.original);
-            event.stopPropagation();
-          }}
-          disabled={isDisabled}
-        >
-          <FilePenLine width={16} height={16} />
-          Edit
-        </DialogTrigger>
+        <div className="space-x-2">
+          <DialogTrigger
+            className={buttonVariants({ size: "sm", variant: "outline" })}
+            onClick={(event) => {
+              setSelected(row.original);
+              event.stopPropagation();
+            }}
+            disabled={isDisabled}
+          >
+            <FilePenLine width={16} height={16} />
+            Edit
+          </DialogTrigger>
+          <Link
+            href={`/tiktok-projects/${row.original.projectId}/graph-explorer`}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <PiGraph /> Graph
+          </Link>
+        </div>
       );
     },
   },

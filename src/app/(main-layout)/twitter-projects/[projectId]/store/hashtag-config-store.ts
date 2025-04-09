@@ -11,7 +11,7 @@ type HashtagAction = {
 };
 
 const useHashtagStore = create<HashtagAction & HashtagState>((set) => ({
-  window: 3,
+  window: 2,
   setWindow(value) {
     set({ window: value });
   },

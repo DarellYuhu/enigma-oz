@@ -12,7 +12,7 @@
     "db:migrate": "dotenv -e .env.development prisma migrate dev",
     "db:deploy": "dotenv -e .env.production prisma migrate deploy",
     "db:seed": "dotenv -e .env.production npx prisma db seed",
-    "docker:build": "docker build -t enigma-oz:latest -f docker/prod/Dockerfile .",
+    "docker:build": "docker build -t darellyuhu/enigma-oz-1:latest -f docker/prod/Dockerfile .",
     "docker:save": "docker save enigma-oz:latest | gzip > enigma-oz-docker.tar.gz"
   },
   "packageManager": "npm@10.8.2",
@@ -70,6 +70,7 @@
     "next-auth": "^5.0.0-beta.25",
     "next-themes": "^0.3.0",
     "react": "^18",
+    "react-aria-components": "^1.7.1",
     "react-chartjs-2": "^5.2.0",
     "react-colorful": "^5.6.1",
     "react-day-picker": "^8.10.1",

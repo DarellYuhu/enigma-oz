@@ -10,7 +10,19 @@ export function useTiktokInterestNet(payload: {
   graphQuery: string;
 }) {
   return useQuery({
-    queryKey: ["trends", "graphs", "interestNet", payload.params.projectId],
+    queryKey: [
+      "trends",
+      "graphs",
+      "interestNet",
+      {
+        projectId: payload.params.projectId,
+        from:
+          payload.graphDate.from &&
+          format(payload.graphDate.from, "yyyy-MM-dd"),
+        to: payload.graphDate.to && format(payload.graphDate.to, "yyyy-MM-dd"),
+        search: payload.graphQuery,
+      },
+    ],
     queryFn: async () => {
       const response = await fetch("/api/v1/project/graphs/interest-network", {
         method: "POST",
