@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import approval from "@/data/approval.json";
 import {
+  Area,
   CartesianGrid,
   ComposedChart,
   Legend,
@@ -10,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { COLORS } from "@/constants";
 import {
   ChartContainer,
@@ -25,123 +26,119 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Approval, normalizeApproval } from "./normalize-approval";
+import { uniq } from "lodash";
 
-type Approval = {
-  data: Record<
-    string,
-    Record<
-      "approve" | "disapprove" | "undecided",
-      Record<
-        "surveys" | "monthly" | "weekly",
-        {
-          date_str: string[];
-          timestamp: number[];
-          surveyor: string[];
-          value: number[];
-        }
-      >
-    >
-  >;
-  officials: Record<number, string>;
-};
+type Entry = {
+  date: number;
+} & Record<
+  string,
+  Record<
+    "approve" | "disapprove" | "undecided",
+    {
+      surveyor: string | null;
+      survey: number | null;
+      value: number | null;
+      margin: [number, number] | null;
+    }
+  >
+>;
+
 export const ApprovalCard = () => {
+  const id = useId();
   const [selected, setSelected] = useState<{ label: string; value: string }[]>(
     []
   );
-  const [seriesType, setSeriesType] = useState<
-    "surveys" | "weekly" | "monthly"
-  >("weekly");
-  const [type, setType] = useState<"approve" | "disapprove" | "undecided">(
-    "approve"
-  );
+  const [margin, setMargin] = useState(false);
+  const [seriesType, setSeriesType] = useState<"weekly" | "monthly">("weekly");
+  const [type, setType] = useState({
+    approve: true,
+    disapprove: false,
+    undecided: false,
+  });
 
   const normalized = useMemo(() => {
     const officialIds = Object.keys(approval.data);
-    const allTimestampsSet = new Set<number>();
+    const approve = normalizeApproval(
+      approval as unknown as Approval,
+      seriesType,
+      "approve",
+      officialIds
+    );
+    const disapprove = normalizeApproval(
+      approval as unknown as Approval,
+      seriesType,
+      "disapprove",
+      officialIds
+    );
+    const undecided = normalizeApproval(
+      approval as unknown as Approval,
+      seriesType,
+      "undecided",
+      officialIds
+    );
 
-    // Collect timestamps from both surveys and weekly for every official.
-    officialIds.forEach((id) => {
-      const approveData = (approval.data as unknown as Approval["data"])[id][
-        type
-      ];
-      if (approveData.surveys?.timestamp) {
-        approveData.surveys.timestamp.forEach((ts) => allTimestampsSet.add(ts));
-      }
-      if (approveData[seriesType]?.timestamp) {
-        approveData[seriesType].timestamp.forEach((ts) =>
-          allTimestampsSet.add(ts)
-        );
-      }
-    });
-
-    // Create a sorted array of all unique timestamps.
-    const allDates = Array.from(allTimestampsSet).sort((a, b) => a - b);
-
-    // Build lookup maps for each official:
-    // - surveysMap: timestamp -> surveyor
-    // - surveyValueMap: timestamp -> survey branch's value
-    // - weeklyMap: timestamp -> weekly branch's value
-    const officialMaps: Record<
-      string,
-      {
-        surveysMap: Record<number, string | null>;
-        surveyValueMap: Record<number, number | null>;
-        weeklyMap: Record<number, number | null>;
-      }
-    > = {};
-    officialIds.forEach((id) => {
-      const { surveys, ...data } = (
-        approval.data as unknown as Approval["data"]
-      )[id][type];
-      const surveysMap: Record<number, string | null> = {};
-      const surveyValueMap: Record<number, number | null> = {};
-      if (surveys?.timestamp) {
-        for (let i = 0; i < surveys.timestamp.length; i++) {
-          surveysMap[surveys.timestamp[i]] = surveys.surveyor[i] || null;
-          surveyValueMap[surveys.timestamp[i]] = surveys.value[i] ?? null;
-        }
-      }
-      const weeklyMap: Record<number, number | null> = {};
-      if (data[seriesType as unknown as "weekly" | "monthly"]?.timestamp) {
-        for (
-          let i = 0;
-          i <
-          data[seriesType as unknown as "weekly" | "monthly"].timestamp.length;
-          i++
-        ) {
-          weeklyMap[
-            data[seriesType as unknown as "weekly" | "monthly"].timestamp[i]
-          ] =
-            data[seriesType as unknown as "weekly" | "monthly"].value[i] ??
-            null;
-        }
-      }
-      officialMaps[id] = { surveysMap, surveyValueMap, weeklyMap };
-    });
+    const allDates = uniq(
+      [...approve.allDates, ...disapprove.allDates, ...undecided.allDates].sort(
+        (a, b) => a - b
+      )
+    );
 
     // Build the normalized result: one entry per unique date.
     const result = allDates.map((date) => {
-      const entry = { date } as {
-        date: number;
-      } & Record<
-        string,
-        {
-          surveyor: string | null;
-          survey: number | null;
-          value: number | null;
-        }
-      >;
+      const entry = { date } as Entry;
       officialIds.forEach((id) => {
         entry[id] = {
-          surveyor: officialMaps[id].surveysMap.hasOwnProperty(date)
-            ? officialMaps[id].surveysMap[date]
-            : null,
-          survey: officialMaps[id].surveyValueMap.hasOwnProperty(date)
-            ? officialMaps[id].surveyValueMap[date]
-            : null,
-          value: officialMaps[id].weeklyMap.hasOwnProperty(date)
-            ? officialMaps[id].weeklyMap[date]
-            : null,
+          approve: {
+            surveyor: approve.officialMaps[id].surveysMap.hasOwnProperty(date)
+              ? approve.officialMaps[id].surveysMap[date]
+              : null,
+            survey: approve.officialMaps[id].surveyValueMap.hasOwnProperty(date)
+              ? approve.officialMaps[id].surveyValueMap[date]
+              : null,
+            value: approve.officialMaps[id].weeklyMap.hasOwnProperty(date)
+              ? approve.officialMaps[id].weeklyMap[date]
+              : null,
+            margin: approve.officialMaps[id].marginMap.hasOwnProperty(date)
+              ? approve.officialMaps[id].marginMap[date]
+              : null,
+          },
+          disapprove: {
+            surveyor: disapprove.officialMaps[id].surveysMap.hasOwnProperty(
+              date
+            )
+              ? disapprove.officialMaps[id].surveysMap[date]
+              : null,
+            survey: disapprove.officialMaps[id].surveyValueMap.hasOwnProperty(
+              date
+            )
+              ? disapprove.officialMaps[id].surveyValueMap[date]
+              : null,
+            value: disapprove.officialMaps[id].weeklyMap.hasOwnProperty(date)
+              ? disapprove.officialMaps[id].weeklyMap[date]
+              : null,
+            margin: disapprove.officialMaps[id].marginMap.hasOwnProperty(date)
+              ? disapprove.officialMaps[id].marginMap[date]
+              : null,
+          },
+          undecided: {
+            surveyor: undecided.officialMaps[id].surveysMap.hasOwnProperty(date)
+              ? undecided.officialMaps[id].surveysMap[date]
+              : null,
+            survey: undecided.officialMaps[id].surveyValueMap.hasOwnProperty(
+              date
+            )
+              ? undecided.officialMaps[id].surveyValueMap[date]
+              : null,
+            value: undecided.officialMaps[id].weeklyMap.hasOwnProperty(date)
+              ? undecided.officialMaps[id].weeklyMap[date]
+              : null,
+            margin: undecided.officialMaps[id].marginMap.hasOwnProperty(date)
+              ? undecided.officialMaps[id].marginMap[date]
+              : null,
+          },
         };
       });
       return entry;
@@ -176,7 +173,7 @@ export const ApprovalCard = () => {
               }
             />
           </div>
-          <Select
+          {/* <Select
             value={type}
             onValueChange={(value) => setType(value as typeof type)}
           >
@@ -188,7 +185,47 @@ export const ApprovalCard = () => {
               <SelectItem value="disapprove">Disapprove</SelectItem>
               <SelectItem value="undecided">Undecided</SelectItem>
             </SelectContent>
-          </Select>
+          </Select> */}
+          <div className="flex gap-6">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={`${id}-a`}
+                checked={type.approve}
+                onCheckedChange={(value) =>
+                  setType({ ...type, approve: value as boolean })
+                }
+              />
+              <Label htmlFor={`${id}-a`}>Approve</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={`${id}-b`}
+                checked={type.disapprove}
+                onCheckedChange={(value) =>
+                  setType({ ...type, disapprove: value as boolean })
+                }
+              />
+              <Label htmlFor={`${id}-b`}>Disapprove</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={`${id}-c`}
+                checked={type.undecided}
+                onCheckedChange={(value) =>
+                  setType({ ...type, undecided: value as boolean })
+                }
+              />
+              <Label htmlFor={`${id}-c`}>Undecided</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={`${id}-d`}
+                checked={margin}
+                onCheckedChange={(v) => setMargin(v as boolean)}
+              />
+              <Label htmlFor={`${id}-d`}>MoE</Label>
+            </div>
+          </div>
           <Select
             value={seriesType}
             onValueChange={(value) => setSeriesType(value as typeof seriesType)}
@@ -255,27 +292,50 @@ export const ApprovalCard = () => {
                 new Date(value).toLocaleDateString()
               }
             />
-            {selected.map(({ label: value, value: key }, idx) => (
-              <Line
-                key={idx}
-                name={`${seriesType} - ${value}`}
-                dataKey={`${key}.value`}
-                stroke={COLORS[idx % COLORS.length]}
-                dot={false}
-                legendType="none"
-                type={"basis"}
-                connectNulls
-              />
-            ))}
-            {selected.map(({ label: value, value: key }, idx) => (
-              <Scatter
-                key={value}
-                name={`Survey - ${value}`}
-                dataKey={`${key}.survey`}
-                fill={COLORS[idx % COLORS.length]}
-                fillOpacity={0.2}
-              />
-            ))}
+
+            {Object.entries(type).map(
+              ([typeKey, value], typeIdx) =>
+                value && (
+                  <>
+                    {margin &&
+                      selected.map(({ label: value, value: key }, idx) => (
+                        <Area
+                          key={`${idx}-m-${typeKey}`}
+                          name={`Margin - ${value}`}
+                          dataKey={`${key}.${typeKey}.margin`}
+                          stroke={COLORS[idx % COLORS.length]}
+                          dot={false}
+                          legendType="none"
+                          type={"basis"}
+                          connectNulls
+                          fillOpacity={0.2}
+                        />
+                      ))}
+                    {selected.map(({ label: value, value: key }, idx) => (
+                      <Line
+                        key={`${idx}-${typeKey}`}
+                        name={`${seriesType} - ${value}`}
+                        dataKey={`${key}.${typeKey}.value`}
+                        stroke={COLORS[idx % COLORS.length]}
+                        dot={false}
+                        legendType="none"
+                        type={"basis"}
+                        connectNulls
+                      />
+                    ))}
+                    {selected.map(({ label: value, value: key }, idx) => (
+                      <Scatter
+                        key={`${value}-${typeKey}`}
+                        name={`Survey - ${value}`}
+                        dataKey={`${key}.${typeKey}.survey`}
+                        fill={COLORS[idx % COLORS.length]}
+                        fillOpacity={0.06}
+                        legendType={typeIdx === 0 ? "circle" : "none"}
+                      />
+                    ))}
+                  </>
+                )
+            )}
           </ComposedChart>
         </ChartContainer>
       </CardContent>

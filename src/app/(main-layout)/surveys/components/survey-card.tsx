@@ -6,6 +6,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -15,8 +17,9 @@ import {
 } from "@/components/ui/select";
 import { COLORS } from "@/constants";
 import survey from "@/data/survey.json";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import {
+  Area,
   CartesianGrid,
   ComposedChart,
   Legend,
@@ -27,16 +30,18 @@ import {
 } from "recharts";
 
 export const SurveyCard = () => {
+  const id = useId();
   const [type, setType] = useState<"weekly" | "monthly">("weekly");
+  const [margin, setMargin] = useState(false);
   const [selected, setSelected] = useState<{ label: string; value: string }[]>(
-    [],
+    []
   );
   const normalized = useMemo(() => {
     const timestampMap = new Map<number, Record<string, any>>();
 
     const filteredCandidates = Object.entries(survey.data)
       .filter(([candidateKey]) =>
-        selected.map((s) => s.value).includes(candidateKey),
+        selected.map((s) => s.value).includes(candidateKey)
       )
       .sort((a, b) => a[0].localeCompare(b[0]));
 
@@ -51,11 +56,17 @@ export const SurveyCard = () => {
 
         // Ensure candidate object exists
         if (!record[candidateKey]) {
-          record[candidateKey] = { value: null, survey: null, surveyor: null };
+          record[candidateKey] = {
+            value: null,
+            survey: null,
+            surveyor: null,
+            margin: null,
+          };
         }
 
         // Assign weekly value to candidate
         record[candidateKey].value = data[type].value[index];
+        record[candidateKey].margin = [surveys.high[index], surveys.low[index]];
       });
 
       surveys.timestamp.forEach((timestamp, index) => {
@@ -66,7 +77,12 @@ export const SurveyCard = () => {
 
         // Ensure candidate object exists
         if (!record[candidateKey]) {
-          record[candidateKey] = { value: null, survey: null, surveyor: null };
+          record[candidateKey] = {
+            value: null,
+            survey: null,
+            surveyor: null,
+            margin: null,
+          };
         }
 
         // Assign surveyor count to candidate
@@ -75,7 +91,11 @@ export const SurveyCard = () => {
       });
     }
 
-    return Array.from(timestampMap.values()).sort((a, b) => a.date - b.date);
+    const sorted = Array.from(timestampMap.values()).sort(
+      (a, b) => a.date - b.date
+    );
+    console.log(sorted);
+    return sorted;
   }, [selected, type]);
 
   useEffect(() => {
@@ -86,7 +106,7 @@ export const SurveyCard = () => {
           .map(([key, value]) => ({
             label: value,
             value: key,
-          })),
+          }))
       );
     }
   }, []);
@@ -94,31 +114,34 @@ export const SurveyCard = () => {
     <Card>
       <CardHeader>
         <CardTitle>Surveys</CardTitle>
-        <div className="grid grid-cols-2 gap-4">
-          <MultipleSelector
-            commandProps={{
-              label: "Select candidates",
-            }}
-            value={selected}
-            defaultOptions={Object.entries(survey.candidates).map(
-              ([key, value]) => ({
-                label: value,
-                value: key,
-              }),
-            )}
-            onChange={setSelected}
-            placeholder="Select candidates"
-            hideClearAllButton
-            hidePlaceholderWhenSelected
-            emptyIndicator={
-              <p className="text-center text-sm">No results found</p>
-            }
-          />
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-5">
+            <MultipleSelector
+              className="w-full"
+              commandProps={{
+                label: "Select candidates",
+              }}
+              value={selected}
+              defaultOptions={Object.entries(survey.candidates).map(
+                ([key, value]) => ({
+                  label: value,
+                  value: key,
+                })
+              )}
+              onChange={setSelected}
+              placeholder="Select candidates"
+              hideClearAllButton
+              hidePlaceholderWhenSelected
+              emptyIndicator={
+                <p className="text-center text-sm">No results found</p>
+              }
+            />
+          </div>
           <Select
             value={type}
             onValueChange={(value) => setType(value as typeof type)}
           >
-            <SelectTrigger className="h-full">
+            <SelectTrigger className="h-full col-span-5">
               <SelectValue placeholder={"Select a type"} />
             </SelectTrigger>
             <SelectContent>
@@ -126,6 +149,14 @@ export const SurveyCard = () => {
               <SelectItem value="monthly">Monthly</SelectItem>
             </SelectContent>
           </Select>
+          <div className="flex items-center gap-2 col-span-2">
+            <Checkbox
+              id={`${id}-m`}
+              checked={margin}
+              onCheckedChange={(v) => setMargin(v as boolean)}
+            />
+            <Label htmlFor={`${id}-m`}>MoE</Label>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="h-[500px]">
@@ -151,13 +182,13 @@ export const SurveyCard = () => {
                   labelKey="date"
                   labelFormatter={(_, payload) => {
                     const firstObject = Object.values(
-                      payload[0].payload,
+                      payload[0].payload
                     )[0] as { surveyor?: string };
                     const surveyor = firstObject?.surveyor
                       ? ` - ${firstObject?.surveyor} surveyor`
                       : "";
                     const date = new Date(
-                      payload[0].payload.date,
+                      payload[0].payload.date
                     ).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -180,6 +211,22 @@ export const SurveyCard = () => {
                 new Date(value).toLocaleDateString()
               }
             />
+            {selected.map(
+              ({ label: value, value: key }, idx) =>
+                margin && (
+                  <Area
+                    key={`${idx}-m`}
+                    name={`Margin - ${value}`}
+                    dataKey={`${key}.margin`}
+                    stroke={COLORS[idx % COLORS.length]}
+                    dot={false}
+                    legendType="none"
+                    type={"basis"}
+                    connectNulls
+                    fillOpacity={0.2}
+                  />
+                )
+            )}
             {selected.map(({ label: value, value: key }, idx) => (
               <Line
                 key={idx}
@@ -198,7 +245,7 @@ export const SurveyCard = () => {
                 name={`Survey - ${value}`}
                 dataKey={`${key}.survey`}
                 fill={COLORS[idx % COLORS.length]}
-                fillOpacity={0.2}
+                fillOpacity={0.06}
               />
             ))}
           </ComposedChart>
