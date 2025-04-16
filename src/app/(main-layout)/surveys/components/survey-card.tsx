@@ -29,11 +29,13 @@ import {
   YAxis,
 } from "recharts";
 import { capitalize } from "lodash";
+import { EnigmaSlider } from "@/components/enigma-slider";
 
 export const SurveyCard = () => {
   const id = useId();
   const [type, setType] = useState<"weekly" | "monthly">("weekly");
   const [margin, setMargin] = useState(false);
+  const [opacity, setOpacity] = useState([2]);
   const [selected, setSelected] = useState<{ label: string; value: string }[]>(
     []
   );
@@ -161,6 +163,13 @@ export const SurveyCard = () => {
             />
             <Label htmlFor={`${id}-m`}>MoE</Label>
           </div>
+          <div className="col-span-5">
+            <EnigmaSlider
+              label="Dot Opacity"
+              value={opacity}
+              onValueChange={setOpacity}
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="h-[500px]">
@@ -247,7 +256,7 @@ export const SurveyCard = () => {
                   name={`Survey - ${value}`}
                   dataKey={`${key}.survey`}
                   fill={COLORS[idx % COLORS.length]}
-                  fillOpacity={0.2}
+                  fillOpacity={opacity[0] * 0.1}
                 />
               </>
             ))}

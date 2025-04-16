@@ -30,6 +30,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Approval, normalizeApproval } from "./normalize-approval";
 import { capitalize, uniq } from "lodash";
+import { EnigmaSlider } from "@/components/enigma-slider";
 
 type Entry = {
   date: number;
@@ -48,11 +49,12 @@ type Entry = {
 
 export const ApprovalCard = () => {
   const id = useId();
+  const [opacity, setOpacity] = useState([2]);
+  const [margin, setMargin] = useState(false);
+  const [seriesType, setSeriesType] = useState<"weekly" | "monthly">("weekly");
   const [selected, setSelected] = useState<{ label: string; value: string }[]>(
     []
   );
-  const [margin, setMargin] = useState(false);
-  const [seriesType, setSeriesType] = useState<"weekly" | "monthly">("weekly");
   const [type, setType] = useState({
     approve: true,
     disapprove: false,
@@ -225,6 +227,13 @@ export const ApprovalCard = () => {
               <SelectItem value="monthly">Monthly</SelectItem>
             </SelectContent>
           </Select>
+          <div className="col-span-1">
+            <EnigmaSlider
+              label="Dot Opacity"
+              value={opacity}
+              onValueChange={setOpacity}
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="h-[500px]">
@@ -323,7 +332,7 @@ export const ApprovalCard = () => {
                           name={`${capitalize(typeKey)} - ${value}`}
                           dataKey={`${key}.${typeKey}.survey`}
                           fill={COLORS[(idx % COLORS.length) + (typeIdx + 1)]}
-                          fillOpacity={0.2}
+                          fillOpacity={opacity[0] * 0.1}
                         />
                       </>
                     ))}
