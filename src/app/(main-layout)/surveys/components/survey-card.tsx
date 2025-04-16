@@ -28,6 +28,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { capitalize } from "lodash";
 
 export const SurveyCard = () => {
   const id = useId();
@@ -66,7 +67,10 @@ export const SurveyCard = () => {
 
         // Assign weekly value to candidate
         record[candidateKey].value = data[type].value[index];
-        record[candidateKey].margin = [surveys.high[index], surveys.low[index]];
+        record[candidateKey].margin = [
+          data[type].high[index],
+          data[type].low[index],
+        ];
       });
 
       surveys.timestamp.forEach((timestamp, index) => {
@@ -211,42 +215,41 @@ export const SurveyCard = () => {
                 new Date(value).toLocaleDateString()
               }
             />
-            {selected.map(
-              ({ label: value, value: key }, idx) =>
-                margin && (
+            {selected.map(({ label: value, value: key }, idx) => (
+              <>
+                {margin && (
                   <Area
                     key={`${idx}-m`}
                     name={`Margin - ${value}`}
                     dataKey={`${key}.margin`}
+                    fill={COLORS[idx % COLORS.length]}
                     stroke={COLORS[idx % COLORS.length]}
                     dot={false}
                     legendType="none"
                     type={"basis"}
                     connectNulls
                     fillOpacity={0.2}
+                    strokeOpacity={0}
                   />
-                )
-            )}
-            {selected.map(({ label: value, value: key }, idx) => (
-              <Line
-                key={idx}
-                name={`${type} - ${value}`}
-                dataKey={`${key}.value`}
-                stroke={COLORS[idx % COLORS.length]}
-                dot={false}
-                legendType="none"
-                type={"basis"}
-                connectNulls
-              />
-            ))}
-            {selected.map(({ label: value, value: key }, idx) => (
-              <Scatter
-                key={value}
-                name={`Survey - ${value}`}
-                dataKey={`${key}.survey`}
-                fill={COLORS[idx % COLORS.length]}
-                fillOpacity={0.06}
-              />
+                )}
+                <Line
+                  key={idx}
+                  name={`${capitalize(type)} - ${value}`}
+                  dataKey={`${key}.value`}
+                  stroke={COLORS[idx % COLORS.length]}
+                  dot={false}
+                  legendType="none"
+                  type={"basis"}
+                  connectNulls
+                />
+                <Scatter
+                  key={value}
+                  name={`Survey - ${value}`}
+                  dataKey={`${key}.survey`}
+                  fill={COLORS[idx % COLORS.length]}
+                  fillOpacity={0.2}
+                />
+              </>
             ))}
           </ComposedChart>
         </ChartContainer>

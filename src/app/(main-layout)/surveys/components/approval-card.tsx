@@ -29,7 +29,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Approval, normalizeApproval } from "./normalize-approval";
-import { uniq } from "lodash";
+import { capitalize, uniq } from "lodash";
 
 type Entry = {
   date: number;
@@ -173,19 +173,6 @@ export const ApprovalCard = () => {
               }
             />
           </div>
-          {/* <Select
-            value={type}
-            onValueChange={(value) => setType(value as typeof type)}
-          >
-            <SelectTrigger className="h-full">
-              <SelectValue placeholder={"Select a type"} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="approve">Approve</SelectItem>
-              <SelectItem value="disapprove">Disapprove</SelectItem>
-              <SelectItem value="undecided">Undecided</SelectItem>
-            </SelectContent>
-          </Select> */}
           <div className="flex gap-6">
             <div className="flex items-center gap-2">
               <Checkbox
@@ -264,9 +251,10 @@ export const ApprovalCard = () => {
                   labelFormatter={(_, payload) => {
                     const firstObject = Object.values(
                       payload[0].payload
-                    )[0] as { surveyor?: string };
-                    const surveyor = firstObject?.surveyor
-                      ? ` - ${firstObject?.surveyor} surveyor`
+                    )[0] as { approve: { surveyor?: string } };
+                    console.log(payload);
+                    const surveyor = firstObject?.approve.surveyor
+                      ? ` - ${firstObject?.approve.surveyor} surveyor`
                       : "";
                     const date = new Date(
                       payload[0].payload.date
@@ -281,7 +269,11 @@ export const ApprovalCard = () => {
               }
             />
 
-            <Legend formatter={(value: string) => value.split("-")[1]} />
+            <Legend
+              formatter={(value: string) => {
+                return value;
+              }}
+            />
 
             <YAxis domain={[0, 100]} />
             <XAxis
@@ -297,41 +289,43 @@ export const ApprovalCard = () => {
               ([typeKey, value], typeIdx) =>
                 value && (
                   <>
-                    {margin &&
-                      selected.map(({ label: value, value: key }, idx) => (
-                        <Area
-                          key={`${idx}-m-${typeKey}`}
-                          name={`Margin - ${value}`}
-                          dataKey={`${key}.${typeKey}.margin`}
-                          stroke={COLORS[idx % COLORS.length]}
+                    {selected.map(({ label: value, value: key }, idx) => (
+                      <>
+                        {margin && (
+                          <Area
+                            key={`${idx}-m-${typeKey}`}
+                            name={`Margin - ${value}`}
+                            dataKey={`${key}.${typeKey}.margin`}
+                            stroke={
+                              COLORS[(idx % COLORS.length) + (typeIdx + 1)]
+                            }
+                            fill={COLORS[(idx % COLORS.length) + (typeIdx + 1)]}
+                            dot={false}
+                            legendType="none"
+                            type={"basis"}
+                            connectNulls
+                            fillOpacity={0.2}
+                            strokeOpacity={0}
+                          />
+                        )}
+                        <Line
+                          key={`${idx}-${typeKey}`}
+                          name={`${capitalize(seriesType)} - ${value}`}
+                          dataKey={`${key}.${typeKey}.value`}
+                          stroke={COLORS[(idx % COLORS.length) + (typeIdx + 1)]}
                           dot={false}
                           legendType="none"
                           type={"basis"}
                           connectNulls
+                        />
+                        <Scatter
+                          key={`${value}-${typeKey}`}
+                          name={`${capitalize(typeKey)} - ${value}`}
+                          dataKey={`${key}.${typeKey}.survey`}
+                          fill={COLORS[(idx % COLORS.length) + (typeIdx + 1)]}
                           fillOpacity={0.2}
                         />
-                      ))}
-                    {selected.map(({ label: value, value: key }, idx) => (
-                      <Line
-                        key={`${idx}-${typeKey}`}
-                        name={`${seriesType} - ${value}`}
-                        dataKey={`${key}.${typeKey}.value`}
-                        stroke={COLORS[idx % COLORS.length]}
-                        dot={false}
-                        legendType="none"
-                        type={"basis"}
-                        connectNulls
-                      />
-                    ))}
-                    {selected.map(({ label: value, value: key }, idx) => (
-                      <Scatter
-                        key={`${value}-${typeKey}`}
-                        name={`Survey - ${value}`}
-                        dataKey={`${key}.${typeKey}.survey`}
-                        fill={COLORS[idx % COLORS.length]}
-                        fillOpacity={0.06}
-                        legendType={typeIdx === 0 ? "circle" : "none"}
-                      />
+                      </>
                     ))}
                   </>
                 )
