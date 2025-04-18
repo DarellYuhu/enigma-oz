@@ -2,7 +2,6 @@ import { Menus } from "@/components/sidebar/AppSidebar";
 import {
   Clapperboard,
   Facebook,
-  FileCheck2,
   MonitorStop,
   ServerCrash,
   TrendingUp,
@@ -10,6 +9,7 @@ import {
   UserCog,
   Youtube,
 } from "lucide-react";
+import { FcSurvey } from "react-icons/fc";
 
 const platformMenu = {
   title: "Platform",
@@ -22,9 +22,19 @@ const platformMenu = {
     },
     process.env.NEXT_PUBLIC_OZ_SURVEYS === "true" && {
       title: "Surveys",
-      url: "/surveys",
-      icon: FileCheck2,
+      url: "",
+      icon: FcSurvey,
       isActive: true,
+      subMenus: [
+        {
+          title: "Timeseries",
+          url: "/surveys",
+        },
+        {
+          title: "Candidates",
+          url: "/candidates",
+        },
+      ],
     },
     {
       title: "Tiktok",

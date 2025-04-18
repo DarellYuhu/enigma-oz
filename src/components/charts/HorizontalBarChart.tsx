@@ -1,3 +1,4 @@
+"use client ";
 import {
   Bar,
   BarChart,
@@ -17,6 +18,7 @@ type Props = {
   data: { [key: string]: any }[];
   selectedId?: string;
   onBarSelect?: (item: YoutubeTopChannels["tc"]["0"]) => void;
+  withDomain?: boolean;
 };
 
 const HorizontalBarChart = ({
@@ -26,6 +28,7 @@ const HorizontalBarChart = ({
   dataKey,
   data,
   selectedId,
+  withDomain,
   onBarSelect,
 }: Props) => {
   return (
@@ -47,7 +50,11 @@ const HorizontalBarChart = ({
         }}
       >
         <CartesianGrid horizontal={false} />
-        <XAxis type="number" dataKey={dataKey} hide />
+        {withDomain ? (
+          <XAxis type="number" dataKey={dataKey} hide domain={[0, 100]} />
+        ) : (
+          <XAxis type="number" dataKey={dataKey} hide />
+        )}
         <YAxis
           dataKey={labelKey}
           type="category"
@@ -62,10 +69,19 @@ const HorizontalBarChart = ({
             <ChartTooltipContent hideLabel={hidelabel} indicator="line" />
           }
         />
-        <Bar dataKey={dataKey} radius={5} fill="#c4e5f3">
+        <Bar
+          dataKey={dataKey}
+          radius={withDomain ? 0 : 5}
+          fill={"#c4e5f3"}
+          background={withDomain ? { fill: "#eee" } : undefined}
+        >
           {data.map((entry, index) => (
             <Cell
-              fill={selectedId !== entry.channel_id ? "#87cfed" : "#c4e5f3"}
+              fill={
+                selectedId !== entry.channel_id || withDomain
+                  ? "#ffb321"
+                  : "#c4e5f3"
+              }
               key={`cell-${index}`}
               onClick={() =>
                 onBarSelect &&
