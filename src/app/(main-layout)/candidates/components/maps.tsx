@@ -1,9 +1,9 @@
 "use client";
 import { useMemo } from "react";
 import chroma from "chroma-js";
-import { BaseMap } from "./base-map";
 import PH_JSON from "@/data/geojson/ph.json";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { BaseMap } from "@/components/base-map";
 
 export const Maps = ({ item }: { item: { [key: string]: number } }) => {
   const colors = useMemo(() => {

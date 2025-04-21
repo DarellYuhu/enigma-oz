@@ -92,6 +92,7 @@ export const BaseMap = <T = unknown,>({
             position: "absolute",
             top: feature.y,
             left: feature.x,
+            zIndex: 100,
           }}
         >
           {renderTooltip?.(feature.data)}

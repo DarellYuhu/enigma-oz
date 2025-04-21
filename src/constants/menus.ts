@@ -34,6 +34,10 @@ const platformMenu = {
           title: "Candidates",
           url: "/candidates",
         },
+        {
+          title: "Ranking",
+          url: "/ranking",
+        },
       ],
     },
     {
