@@ -38,6 +38,10 @@ const platformMenu = {
           title: "Ranking",
           url: "/ranking",
         },
+        {
+          title: "Political Base",
+          url: "/political-base",
+        },
       ],
     },
     {
