@@ -3,12 +3,21 @@ import RechartArea from "@/components/charts/RechartArea";
 import SingleSelect from "@/components/SingleSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useFacebookStatistics from "@/hooks/features/facebook/useFacebookStatistics";
+import useStatisticDateStore from "@/store/statistic-date-store";
 import abbreviateNumber from "@/utils/abbreviateNumber";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function Timeseries() {
+export default function Timeseries({ lastUpdate }: { lastUpdate?: string }) {
   const [type, setType] = useState<"daily" | "weekly" | "monthly">("daily");
+  const { setTo } = useStatisticDateStore();
   const { data } = useFacebookStatistics();
+
+  useEffect(() => {
+    if (lastUpdate) {
+      setTo(new Date(lastUpdate));
+    }
+  }, [lastUpdate]);
+
   return (
     <div className="space-y-3">
       <div className="flex place-self-end">

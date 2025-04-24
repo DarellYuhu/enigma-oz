@@ -9,7 +9,15 @@ export default function useFacebookStatistics() {
   const params = useParams();
 
   return useQuery({
-    queryKey: ["facebook", "statistics", params.id],
+    queryKey: [
+      "facebook",
+      "statistics",
+      params.id,
+      {
+        from: format(from!, "yyyy-MM-dd"),
+        to: format(to!, "yyyy-MM-dd"),
+      },
+    ],
     queryFn: async () => {
       const url = new URL(
         `/api/v1/facebook/${params.id}/statistics`,
