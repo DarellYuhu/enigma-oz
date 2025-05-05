@@ -100,7 +100,6 @@ export const SurveyCard = () => {
     const sorted = Array.from(timestampMap.values()).sort(
       (a, b) => a.date - b.date
     );
-    console.log(sorted);
     return sorted;
   }, [selected, type]);
 

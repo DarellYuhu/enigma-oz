@@ -261,7 +261,6 @@ export const ApprovalCard = () => {
                     const firstObject = Object.values(
                       payload[0].payload
                     )[0] as { approve: { surveyor?: string } };
-                    console.log(payload);
                     const surveyor = firstObject?.approve.surveyor
                       ? ` - ${firstObject?.approve.surveyor} surveyor`
                       : "";

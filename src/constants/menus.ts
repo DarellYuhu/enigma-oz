@@ -42,6 +42,10 @@ const platformMenu = {
           title: "Political Base",
           url: "/political-base",
         },
+        {
+          title: "Prediction",
+          url: "/prediction",
+        },
       ],
     },
     {
