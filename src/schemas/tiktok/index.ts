@@ -13,7 +13,7 @@ const create = z.object({
 
 const update = z.object({
   projectId: z.string().optional(),
-  keywords: z.string().optional(),
+  keywords: z.string().trim().min(1, "Required").optional(),
   status: z.boolean().optional(),
 
   // added for accessibility only
