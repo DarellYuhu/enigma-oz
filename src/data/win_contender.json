@@ -1,0 +1,28 @@
+{
+  "data": {
+    "chance_to_win": [
+      { "candidate": "B. Tulfo", "value": 100.0 },
+      { "candidate": "Binay", "value": 100.0 },
+      { "candidate": "C. Villar", "value": 100.0 },
+      { "candidate": "Cayetano", "value": 100.0 },
+      { "candidate": "dela Rosa", "value": 100.0 },
+      { "candidate": "E. Tulfo", "value": 100.0 },
+      { "candidate": "Go", "value": 100.0 },
+      { "candidate": "Lacson", "value": 100.0 },
+      { "candidate": "Lapid", "value": 100.0 },
+      { "candidate": "Revilla", "value": 100.0 },
+      { "candidate": "Revillame", "value": 41.902 },
+      { "candidate": "T. Sotto", "value": 100.0 },
+      { "candidate": "Marcos", "value": 44.259 },
+      { "candidate": "Pacquiao", "value": 41.626 }
+    ],
+    "strong_contender": [
+      { "candidate": "Abalos", "value": 100.0 },
+      { "candidate": "Marcos", "value": 55.741 },
+      { "candidate": "Pacquiao", "value": 58.374 },
+      { "candidate": "Aquino", "value": 89.636 },
+      { "candidate": "Pangilinan", "value": 53.283 },
+      { "candidate": "Revillame", "value": 58.098 }
+    ]
+  }
+}
