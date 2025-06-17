@@ -22,7 +22,7 @@ const platformMenu = {
       subMenus: [
         {
           title: "Topics",
-          url: "/online-public-attention/to-be-modified",
+          url: "/online-public-attention/topics",
         },
         { title: "Senatorial Candidates", url: "/online-public-attention" },
       ],

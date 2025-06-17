@@ -11,7 +11,7 @@ type Params = {
   };
 };
 
-export default async function TestingPage({ searchParams }: Params) {
+export default async function TopicsPage({ searchParams }: Params) {
   const { selected } = searchParams;
   const terms = (
     await axios.post<TermsRes>("http://172.233.75.107:8912/api/queries")
