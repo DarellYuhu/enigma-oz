@@ -177,6 +177,7 @@ const EditProjectSheet = ({ projectId }: { projectId: string }) => {
                             <img
                               src={`/api${form.getValues("image")}` as string}
                               className="size-16 object-cover border rounded-md"
+                              alt="card image"
                             />
                             <Separator
                               orientation="vertical"

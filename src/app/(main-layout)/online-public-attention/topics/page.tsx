@@ -58,7 +58,16 @@ export default async function TopicsPage({ searchParams }: Params) {
         data={normalized}
       />
 
-      <Maps colors={colors} data={geoData} />
+      <Maps
+        colors={colors}
+        data={geoData}
+        options={[
+          { label: "All", value: "all" },
+          ...terms.terms
+            .filter((t) => (selected ?? "1 2 3").includes(t.key))
+            .map((t) => ({ label: t.name, value: t.key })),
+        ]}
+      />
     </div>
   );
 }
