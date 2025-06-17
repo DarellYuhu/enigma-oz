@@ -2,6 +2,7 @@ import { TimeSeries } from "./components/time-series";
 import { format, subYears } from "date-fns";
 import axios from "axios";
 import generateNodeColors from "@/utils/generateNodeColors";
+import { Maps } from "./components/maps";
 
 type Params = {
   searchParams: {
@@ -15,16 +16,28 @@ export default async function TestingPage({ searchParams }: Params) {
   const terms = (
     await axios.post<TermsRes>("http://172.233.75.107:8912/api/queries")
   ).data;
+  const since = format(subYears(new Date(), 1), "yyyy-MM-dd");
+  const until = format(new Date(), "yyyy-MM-dd");
   const timeseries = (
     await axios.post<OpaRes>("http://172.233.75.107:8912/api/terms", {
       type: "get-trends-terms",
       terms: selected ?? "1 2 3",
       level: "1",
-      since: format(subYears(new Date(), 1), "yyyy-MM-dd"),
-      until: format(new Date(), "yyyy-MM-dd"),
+      since,
+      until,
       details: "PH",
     })
   ).data;
+  const geoData = (
+    await axios.post<OpaGeoRes>("http://172.233.75.107:8912/api/geo", {
+      type: "get-region-top-terms",
+      category: selected ?? "1 2 3",
+      level: "1",
+      since,
+      until,
+      details: "PH",
+    })
+  ).data.map(({ pct_last, ...item }) => ({ ...item, ...pct_last }));
   const colors = generateNodeColors(
     terms.terms.map((t) => t.key),
     "random"
@@ -32,13 +45,15 @@ export default async function TestingPage({ searchParams }: Params) {
   const normalized = normalizeTimeseries(timeseries);
 
   return (
-    <div>
+    <div className="space-y-4">
       <TimeSeries
         options={terms.terms.map((t) => ({ label: t.name, value: t.key }))}
         dic={timeseries.dic}
         colors={colors}
         data={normalized}
       />
+
+      <Maps colors={colors} data={geoData} />
     </div>
   );
 }

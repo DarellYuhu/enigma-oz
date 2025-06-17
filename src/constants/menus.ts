@@ -20,11 +20,11 @@ const platformMenu = {
       icon: TrendingUp,
       isActive: true,
       subMenus: [
-        { title: "Main", url: "/online-public-attention" },
         {
-          title: "To be modified",
+          title: "Topics",
           url: "/online-public-attention/to-be-modified",
         },
+        { title: "Senatorial Candidates", url: "/online-public-attention" },
       ],
     },
     process.env.NEXT_PUBLIC_OZ_SURVEYS === "true" && {

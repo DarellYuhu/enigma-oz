@@ -83,7 +83,7 @@ const Maps = ({ details }: { details: string }) => {
               onClick={(e) => {
                 if (e.features && e.features[0])
                   window.open(
-                    `/trends/${e.features[0].properties!.regcode}`,
+                    `/online-public-attention/${e.features[0].properties!.regcode}`,
                     "_blank"
                   );
               }}
@@ -150,13 +150,19 @@ const Maps = ({ details }: { details: string }) => {
                             tooltip={false}
                             outerRadius={40}
                             innerRadius={20}
-                            config={feature.data[type].reduce((acc, curr) => {
-                              acc[curr.key] = {
-                                label: curr.name,
-                                color: trends.data.colors[curr.key],
-                              };
-                              return acc;
-                            }, {} as Record<string, { label: string; color: string }>)}
+                            config={feature.data[type].reduce(
+                              (acc, curr) => {
+                                acc[curr.key] = {
+                                  label: curr.name,
+                                  color: trends.data.colors[curr.key],
+                                };
+                                return acc;
+                              },
+                              {} as Record<
+                                string,
+                                { label: string; color: string }
+                              >
+                            )}
                             data={feature.data[type].map((item) => ({
                               ...item,
                               fill: trends.data.colors[item.key],

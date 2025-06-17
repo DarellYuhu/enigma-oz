@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePathname, useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 
 type Params = {
   options: {
@@ -28,6 +28,8 @@ type Params = {
 };
 
 export const TimeSeries = ({ options, dic, colors, data }: Params) => {
+  const searchParams = useSearchParams();
+  const selectedQuery = searchParams.get("selected");
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -43,6 +45,21 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
     startTransition(() => router.push(`${pathname}?${params.toString()}`));
   };
 
+  useEffect(() => {
+    if (selectedQuery) {
+      const selections = selectedQuery
+        .split(" ")
+        .map((item) => {
+          const option = options.find((o) => o.value === item);
+          return option ? { label: option.label, value: option.value } : null;
+        })
+        .filter(Boolean) as { label: string; value: string }[];
+
+      setSelected(selections);
+    }
+    if (!selectedQuery) setSelected(options.slice(0, 3));
+  }, [selectedQuery]);
+
   return (
     <Card>
       <CardHeader>
@@ -56,12 +73,12 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
           />
           <MultipleSelector
             commandProps={{
-              label: "Select candidates",
+              label: "Select...",
             }}
             value={selected}
             defaultOptions={options}
             onChange={setSelected}
-            placeholder="Select candidates"
+            placeholder="Select..."
             hideClearAllButton
             hidePlaceholderWhenSelected
             emptyIndicator={

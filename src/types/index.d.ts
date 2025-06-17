@@ -17,3 +17,21 @@ type OpaRes = {
 type OpaNormalizedData = {
   [key: string]: number | string;
 };
+
+type OpaGeoRes = {
+  pct_last: {
+    "1d": PctData[];
+    "1w": PctData[];
+    "1m": PctData[];
+  };
+  pct_total: PctData[];
+  region: string;
+  rid: string;
+}[];
+
+type PctData = {
+  key: string; // <-- a number
+  name: string;
+  value: number;
+  rank: number;
+};
