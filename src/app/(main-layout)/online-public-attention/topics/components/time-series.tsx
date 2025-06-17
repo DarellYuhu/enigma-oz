@@ -1,6 +1,7 @@
 "use client";
 
 import RechartMultiLine from "@/components/charts/RechartMultiLine";
+import { DatePicker } from "@/components/DatePicker";
 import MultipleSelector from "@/components/MultiSelect";
 import SingleSelect from "@/components/SingleSelect";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { format, subDays, subYears } from "date-fns";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
@@ -34,6 +37,10 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [period, setPeriod] = useState<"week" | "month">("week");
+  const [dateRange, setDateRange] = useState({
+    since: subYears(new Date(), 1),
+    until: new Date(),
+  });
   const [selected, setSelected] = useState<{ label: string; value: string }[]>(
     []
   );
@@ -42,6 +49,15 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
     const params = new URLSearchParams();
     if (selected.length > 0)
       params.set("selected", selected.map((s) => s.value).join(" "));
+    if (dateRange.since && dateRange.until) {
+      params.set(
+        "date_range",
+        [
+          format(dateRange.since, "yyyy-MM-dd"),
+          format(dateRange.until, "yyyy-MM-dd"),
+        ].join(",")
+      );
+    }
     startTransition(() => router.push(`${pathname}?${params.toString()}`));
   };
 
@@ -64,7 +80,6 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
     <Card>
       <CardHeader>
         <CardTitle>Time Series</CardTitle>
-        <CardDescription></CardDescription>
         <div className="flex gap-2">
           <SingleSelect
             selections={selections}
@@ -88,6 +103,25 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
           <Button disabled={isPending} onClick={handleSubmit}>
             Submit
           </Button>
+        </div>
+        <div className="">
+          <Label>Date Range</Label>
+          <div className="flex flex-row gap-3 items-center">
+            <DatePicker
+              date={dateRange.since}
+              onDateChange={(date) =>
+                date && setDateRange({ ...dateRange, since: date })
+              }
+              toDate={subDays(dateRange.until, 1)}
+            />
+            -
+            <DatePicker
+              date={dateRange.until}
+              onDateChange={(date) =>
+                date && setDateRange({ ...dateRange, until: date })
+              }
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="h-80">

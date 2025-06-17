@@ -8,23 +8,28 @@ type Params = {
   searchParams: {
     period?: string;
     selected?: string;
+    date_range?: string;
   };
 };
 
 export default async function TopicsPage({ searchParams }: Params) {
-  const { selected } = searchParams;
+  const { selected, date_range } = searchParams;
   const terms = (
     await axios.post<TermsRes>("http://172.233.75.107:8912/api/queries")
   ).data;
-  const since = format(subYears(new Date(), 1), "yyyy-MM-dd");
-  const until = format(new Date(), "yyyy-MM-dd");
+  const dateRange = date_range
+    ? date_range.split(",")
+    : [
+        format(subYears(new Date(), 1), "yyyy-MM-dd"),
+        format(new Date(), "yyyy-MM-dd"),
+      ];
   const timeseries = (
     await axios.post<OpaRes>("http://172.233.75.107:8912/api/terms", {
       type: "get-trends-terms",
       terms: selected ?? "1 2 3",
       level: "1",
-      since,
-      until,
+      since: dateRange[0],
+      until: dateRange[1],
       details: "PH",
     })
   ).data;
@@ -33,8 +38,8 @@ export default async function TopicsPage({ searchParams }: Params) {
       type: "get-region-top-terms",
       category: selected ?? "1 2 3",
       level: "1",
-      since,
-      until,
+      since: dateRange[0],
+      until: dateRange[1],
       details: "PH",
     })
   ).data.map(({ pct_last, ...item }) => ({ ...item, ...pct_last }));
