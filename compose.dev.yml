@@ -6,9 +6,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - dev-data:/var/lib/postgresql/data
+      - dev_data:/var/lib/postgresql/data
 
 volumes:
-  dev-data:
-    name: enigma_dev-data
-    external: true
+  dev_data:

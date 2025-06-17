@@ -16,9 +16,16 @@ const platformMenu = {
   items: [
     process.env.NEXT_PUBLIC_OZ_ONLINE_PUBLIC_ATTENTION === "true" && {
       title: "Online Public Attention",
-      url: "/trends",
+      url: "",
       icon: TrendingUp,
       isActive: true,
+      subMenus: [
+        { title: "Main", url: "/online-public-attention" },
+        {
+          title: "To be modified",
+          url: "/online-public-attention/to-be-modified",
+        },
+      ],
     },
     process.env.NEXT_PUBLIC_OZ_SURVEYS === "true" && {
       title: "Surveys",
