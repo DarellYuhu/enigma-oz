@@ -21,6 +21,7 @@ type Params = {
   data: {
     week: OpaNormalizedData[];
     month: OpaNormalizedData[];
+    day: OpaNormalizedData[];
   } | null;
 };
 
@@ -30,13 +31,13 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
-  const [period, setPeriod] = useState<"week" | "month">("week");
+  const [period, setPeriod] = useState<"week" | "month" | "day">("week");
   const [dateRange, setDateRange] = useState({
     since: subYears(new Date(), 1),
     until: new Date(),
   });
   const [selected, setSelected] = useState<{ label: string; value: string }[]>(
-    []
+    [],
   );
 
   const handleSubmit = () => {
@@ -49,7 +50,7 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
         [
           format(dateRange.since, "yyyy-MM-dd"),
           format(dateRange.until, "yyyy-MM-dd"),
-        ].join(",")
+        ].join(","),
       );
     }
     startTransition(() => router.push(`${pathname}?${params.toString()}`));
@@ -142,6 +143,10 @@ export const TimeSeries = ({ options, dic, colors, data }: Params) => {
 };
 
 const selections = [
+  {
+    value: "day",
+    label: "Daily",
+  },
   {
     value: "week",
     label: "Weekly",

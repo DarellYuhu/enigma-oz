@@ -45,10 +45,9 @@ export default async function TopicsPage({ searchParams }: Params) {
   ).data.map(({ pct_last, ...item }) => ({ ...item, ...pct_last }));
   const colors = generateNodeColors(
     terms.terms.map((t) => t.key),
-    "random"
+    "random",
   );
   const normalized = normalizeTimeseries(timeseries);
-
   return (
     <div className="space-y-4">
       <TimeSeries
@@ -64,7 +63,7 @@ export default async function TopicsPage({ searchParams }: Params) {
         options={[
           { label: "All", value: "all" },
           ...terms.terms
-            .filter((t) => (selected ?? "1 2 3").includes(t.key))
+            .filter((t) => (selected ?? "1 2 3").split(" ").includes(t.key))
             .map((t) => ({ label: t.name, value: t.key })),
         ]}
       />
@@ -82,7 +81,7 @@ const normalizeTimeseries = (data: OpaRes) => {
           acc[curr] = parseFloat(data.data["1w"].data[curr][index].toFixed(3));
           return acc;
         },
-        {}
+        {},
       );
       return {
         date,
@@ -95,7 +94,20 @@ const normalizeTimeseries = (data: OpaRes) => {
           acc[curr] = parseFloat(data.data["1m"].data[curr][index].toFixed(3));
           return acc;
         },
-        {}
+        {},
+      );
+      return {
+        date,
+        ...record,
+      } as OpaNormalizedData;
+    }),
+    day: data.data["1d"].datestr.map((date, index) => {
+      const record = keys.reduce(
+        (acc: Record<string, number>, curr: string) => {
+          acc[curr] = parseFloat(data.data["1d"].data[curr][index].toFixed(3));
+          return acc;
+        },
+        {},
       );
       return {
         date,

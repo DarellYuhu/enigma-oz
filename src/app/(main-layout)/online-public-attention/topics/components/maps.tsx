@@ -6,7 +6,7 @@ import { Fragment, useMemo, useState } from "react";
 import RechartDoughnut from "@/components/charts/RechartDoughnut";
 import { BaseMap } from "@/components/base-map";
 
-type KeyIndex = "1m" | "1w" | "pct_total";
+type KeyIndex = "1d" | "1m" | "1w" | "pct_total";
 
 type Params = {
   data: ({
@@ -20,7 +20,7 @@ type Params = {
 };
 
 export const Maps = ({ data, colors, options }: Params) => {
-  const [type, setType] = useState<"1m" | "1w" | "pct_total">("1m");
+  const [type, setType] = useState<"1m" | "1w" | "1d" | "pct_total">("1m");
   const [selected, setSelected] = useState<string>("all");
 
   const intensityData = useMemo(() => {
@@ -87,13 +87,19 @@ export const Maps = ({ data, colors, options }: Params) => {
                           tooltip={false}
                           outerRadius={40}
                           innerRadius={20}
-                          config={data[type].reduce((acc, curr) => {
-                            acc[curr.key] = {
-                              label: curr.name,
-                              color: colors[curr.key],
-                            };
-                            return acc;
-                          }, {} as Record<string, { label: string; color: string }>)}
+                          config={data[type].reduce(
+                            (acc, curr) => {
+                              acc[curr.key] = {
+                                label: curr.name,
+                                color: colors[curr.key],
+                              };
+                              return acc;
+                            },
+                            {} as Record<
+                              string,
+                              { label: string; color: string }
+                            >,
+                          )}
                           data={data[type].map((item) => ({
                             ...item,
                             fill: colors[item.key],
@@ -168,6 +174,10 @@ const selections = [
   {
     label: "Last 1w",
     value: "1w",
+  },
+  {
+    label: "Last 1d",
+    value: "1d",
   },
   {
     label: "Total",
