@@ -15,9 +15,8 @@ import { Download } from "lucide-react";
 import { toast } from "sonner";
 
 const HashtagNetGraph = ({ projectId }: { projectId: string }) => {
-  const { date } = useHashtagStore();
+  const { date, window } = useHashtagStore();
   const { setHashtag, setDate } = useClusterStore();
-  const { window } = useHashtagStore();
   const { data, isPending } = useTwitterHashtagNet2({
     projectId,
     date: dateFormatter("ISO", date),
@@ -27,7 +26,7 @@ const HashtagNetGraph = ({ projectId }: { projectId: string }) => {
   useEffect(() => {
     if (data) {
       const firstNonEmptyClassKey = Object.keys(data.data.classes).find(
-        (key) => data.data.classes[key].representation !== ""
+        (key) => data.data.classes[key].representation !== "",
       );
       if (firstNonEmptyClassKey) setHashtag(firstNonEmptyClassKey);
       setDate(adjustDateByFactor(-1, new Date(data.data.date)));
